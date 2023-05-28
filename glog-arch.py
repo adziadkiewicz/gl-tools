@@ -4,6 +4,10 @@
 # skrypt archiwizacyjny dla systemu Graylog (min. v2.x), elasticsearch (min.2.4.x)
 # (c) 2018-2023 AD, Salutaris Sp. z o.o.
 #
+# v 4.0
+# - dodanie obsługi OpenSearch
+#
+#
 # v 3.1
 # - dodanie mechanizmu przegladu zestawu indeksow i wylaczenie deflektorow (indeksow R/W)
 #
