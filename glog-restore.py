@@ -21,7 +21,8 @@ import getopt
 import argparse
 from datetime import datetime
 from datetime import timedelta
-from elasticsearch import Elasticsearch
+from opensearchpy import OpenSearch
+# lub --> from elasticsearch import Elasticsearch
 
 def query_yes_no(question, default="yes"):
 
@@ -62,6 +63,9 @@ def time_in_range(start, end, x):
         else:
                 return start <= x or x <= end
 
+#wylaczenie komunikatow o bledach SSL (samopodpisane certyfikaty itp.)
+urllib3.disable_warnings()
+
 #
 # argumenty
 #
@@ -83,10 +87,10 @@ if f:
     def_es_repo=variables["repo_name"]
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-g","--glog_host", required=True, help="podaj nazwe hosta systemu Graylog", default=def_glog_host)
+parser.add_argument("-g","--glog_host", help="podaj nazwe hosta systemu Graylog", default=def_glog_host)
 parser.add_argument("-p","--glog_port", help="podaj port systemu Graylog (domyslnie 9000)", default=def_glog_port)
 parser.add_argument("-P","--glog_proto", help="podaj protokol dodstepu do systemu (domyslnie https)", default=def_glog_proto)
-parser.add_argument("-t","--glog_token", required=True, help="podaj token API do systemu Graylog", default=def_glog_token)
+parser.add_argument("-t","--glog_token", help="podaj token API do systemu Graylog", default=def_glog_token)
 parser.add_argument("-b","--date_begin", required=True, help="data poczatkowa archiwum zakresu do odtworzenia", default="")
 parser.add_argument("-e","--date_end", required=True, help="data koncowa archiwum zakresu do odtworzenia", default="")
 parser.add_argument("-r","--es_repo", help="repozytorium backupow Elasticsearch (domyslnie \'glog_arch\')", default=def_es_repo)
@@ -115,7 +119,8 @@ else:
         es_port = "9200"
         es_repo = args.es_repo
         es_snap_restore_timeout = 1000
-        es = Elasticsearch()
+            
+        # lub --> es = Elasticsearch(es_proto + "://" + es_host + ":" + es_port)
         date_start = try_parseDate(args.date_begin,['%Y%m%d%H%M%S','%Y-%m-%d'])
         if (date_start is None):
                 print("Niepoprawna data rozpoczecia!")
