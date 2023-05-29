@@ -12,13 +12,24 @@ then
     echo " KROK (1) HASLO ADMINISTRATORA APPLIANCE "
     echo "==================================================="
     echo ""
-    echo -n "Podaj haslo uzytkownika root"
-    echo ""
-    echo -n "Wywoluje komende 'passwd root' ... "
-    echo ""
-    echo -n "UWAGA: Znaki nie sa widoczne!"
-    echo ""
-    passwd root
+    #echo -n "Podaj haslo uzytkownika root"
+    #echo ""
+    #echo -n "Wywoluje komende 'passwd root' ... "
+    #echo ""
+    #echo -n "UWAGA: Znaki nie sa widoczne!"
+    #echo ""
+    #passwd root
+    unset password
+    prompt="Podaj haslo uzytkownika root:"
+    while IFS= read -p "$prompt" -r -s -n 1 char
+    do
+        if [[ $char == $'\0' ]]
+        then
+            break
+        fi
+        prompt='*'
+        password+="$char"
+    done
     echo ""
     echo ""
     echo "==================================================="
@@ -78,7 +89,7 @@ then
     echo " KROK (4) - USTAWIENIA APLIKACJI"
     echo "==================================================="
     echo ""
-    echo -n "Podaj haslo dla uzytkownika admin (Graylog/Zabbix/Grafana GUI)"
+    echo -n "Podaj haslo dla uzytkownika admin (Graylog GUI)"
     echo ""
     echo -n "  UWAGA: znaki nie sa widoczne!"
     echo ""
