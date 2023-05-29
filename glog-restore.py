@@ -69,14 +69,26 @@ def time_in_range(start, end, x):
 # ustawienie zmiennych - dostep do systemu
 #
 
+try:
+    f = open("/etc/glog-appliance/var/variables.json", "rb")
+except:
+    print('[W] Unable to open file "/etc/glog-appliance/var/variables.json"!')
+
+if f:
+    def_glog_host=variables["glog_host"]
+    def_glog_port=variables["glog_port"]
+    def_glog_proto=variables["glog_proto"]
+    def_glog_token=variables["glog_token"]
+    def_es_repo=variables["repo_name"]
+
 parser = argparse.ArgumentParser()
-parser.add_argument("-g","--glog_host", required=True, help="podaj nazwe hosta systemu Graylog", default="")
-parser.add_argument("-p","--glog_port", help="podaj port systemu Graylog (domyslnie 9000)", default="9000")
-parser.add_argument("-P","--glog_proto", help="podaj protokol dodstepu do systemu (domyslnie https)", default="https")
-parser.add_argument("-t","--glog_token", required=True, help="podaj token API do systemu Graylog", default="")
+parser.add_argument("-g","--glog_host", required=True, help="podaj nazwe hosta systemu Graylog", default=def_glog_host)
+parser.add_argument("-p","--glog_port", help="podaj port systemu Graylog (domyslnie 9000)", default=def_glog_port)
+parser.add_argument("-P","--glog_proto", help="podaj protokol dodstepu do systemu (domyslnie https)", default=def_glog_proto)
+parser.add_argument("-t","--glog_token", required=True, help="podaj token API do systemu Graylog", default=def_glog_token)
 parser.add_argument("-b","--date_begin", required=True, help="data poczatkowa archiwum zakresu do odtworzenia", default="")
 parser.add_argument("-e","--date_end", required=True, help="data koncowa archiwum zakresu do odtworzenia", default="")
-parser.add_argument("-r","--es_repo", help="repozytorium backupow Elasticsearch (domyslnie \'glog_arch\')", default="glog_arch")
+parser.add_argument("-r","--es_repo", help="repozytorium backupow Elasticsearch (domyslnie \'glog_arch\')", default=def_es_repo)
 args = parser.parse_args()
 
 if args.glog_host == "":
