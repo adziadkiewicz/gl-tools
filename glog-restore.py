@@ -111,33 +111,33 @@ if args.date_end == "":
         quit()
 
 else:
-        glog_host = args.glog_host
-        glog_proto = args.glog_proto
-        glog_port = args.glog_port
-        glog_token = args.glog_token
-        es_host = "localhost"
-        es_proto = "http"
-        es_port = "9200"
-        es_repo = args.es_repo
-        es_snap_restore_timeout = 1000
-            
-        # lub --> es = Elasticsearch(es_proto + "://" + es_host + ":" + es_port)
-        date_start = try_parseDate(args.date_begin,['%Y%m%d%H%M%S','%Y-%m-%d'])
-        if (date_start is None):
-                print("Niepoprawna data rozpoczecia!")
-                parser.print_help()
-                quit()
+    glog_host = args.glog_host
+    glog_proto = args.glog_proto
+    glog_port = args.glog_port
+    glog_token = args.glog_token
+    es_host = "localhost"
+    es_proto = "http"
+    es_port = "9200"
+    es_repo = args.es_repo
+    es_snap_restore_timeout = 1000
+    es = OpenSearch(es_proto + "://" + es_host + ":" + es_port)   
+    # lub --> es = Elasticsearch(es_proto + "://" + es_host + ":" + es_port)
+    date_start = try_parseDate(args.date_begin,['%Y%m%d%H%M%S','%Y-%m-%d'])
+    if (date_start is None):
+            print("Niepoprawna data rozpoczecia!")
+            parser.print_help()
+            quit()
 
-        date_end = try_parseDate(args.date_end, ['%Y%m%d%H%M%S','%Y-%m-%d'])
-        if (date_end is None):
-                print("Niepoprawna data konca!")
-                parser.print_help()
-                quit()
+    date_end = try_parseDate(args.date_end, ['%Y%m%d%H%M%S','%Y-%m-%d'])
+    if (date_end is None):
+        print("Niepoprawna data konca!")
+        parser.print_help()
+        quit()
 
-        if date_start > date_end:
-                print("Data rozpoczecia jest pozniejsza niz data rozpoczecia!")
-                parser.print_help()
-                quit()
+    if date_start > date_end:
+        print("Data rozpoczecia jest pozniejsza niz data rozpoczecia!")
+        parser.print_help()
+        quit()
 
 #
 # pobranie informacji dot. indeksow elasticsearch Graylog
@@ -149,23 +149,23 @@ glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/system/indice
 try:
 	myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
 except:
-        print('[E] Unable to connect to ' + glogurl + '! Ending...')
-        sys.exit(1)
+    print('[E] Unable to connect to ' + glogurl + '! Ending...')
+    sys.exit(1)
 
 lIndexNames = []
 
 if(myResponse.ok):
 
-        #
-        # zaladowanie informacji o uzywanych indeksach przez Graylog
-        #
+    #
+    # zaladowanie informacji o uzywanych indeksach przez Graylog
+    #
 
-        jIndices = json.loads(myResponse.content)
-        for key in jIndices['ranges']:
-                lIndexNames += [key['index_name']]
+    jIndices = json.loads(myResponse.content)
+    for key in jIndices['ranges']:
+        lIndexNames += [key['index_name']]
 
 else:
-        myResponse.raise_for_status()
+    myResponse.raise_for_status()
 
 
 #
@@ -179,8 +179,8 @@ url = es_proto + "://" + es_host + ":" + es_port + "/_snapshot/" + es_repo + "/_
 try:
 	myResponse = requests.get(url, verify=True)
 except:
-        print('[E] Unable to connect to ' + url + '! Ending...')
-        sys.exit(1)
+    print('[E] Unable to connect to ' + url + '! Ending...')
+    sys.exit(1)
 
 lSnaps = []
 lIndicesInSnaps = {}
