@@ -5,8 +5,8 @@
 # (c) 2018-2023 AD, Salutaris Sp. z o.o.
 #
 # v 4.0
-# - dodanie obsługi OpenSearch
-#
+# - dodanie obslugi OpenSearch
+# - dodanie obslugi pliku z parametrami
 #
 # v 3.1
 # - dodanie mechanizmu przegladu zestawu indeksow i wylaczenie deflektorow (indeksow R/W)
@@ -14,21 +14,21 @@
 # v 3.0
 # - poprawka 2023 - elasticsearch 7.x
 # - wylaczenie komunikatow o bledach SSL (samopodpisane certyfikaty itp.)
-# 
+#
 # v 2.4
 # - poprawka bledu inicjalizacji es = Elasticsearch(es_proto + "://" + es_host + ":" + es_port)
 #
 # v.2.3
-# - wlaczenie obslugi bledow 
+# - wlaczenie obslugi bledow
 # - dodanie parametru es_proto oraz glog_proto
 #
-# 	HISTORIA:
-#	v2.2
+#       HISTORIA:
+#       v2.2
 #       aktualizacja do python3, elasticsearch 6.x
-# 
 #
-#	UWAGA: nalezy wykonac dos2unix przed uzyciem pliku !
-#	UWAGA2: dziala z wersja modulu elasticsearch==7.14 (nie dziala z 8.1.x!)
+#
+#       UWAGA: nalezy wykonac dos2unix przed uzyciem pliku !
+#       UWAGA2: dla ES dziala z wersja modulu max. elasticsearch==7.10 (nie dziala z 8.1.x!)
 #
 
 import requests
@@ -40,37 +40,48 @@ import certifi
 import sys
 import urllib3
 from datetime import datetime
-from elasticsearch import Elasticsearch
+from opensearchpy import OpenSearch
+# lub --> from elasticsearch import Elasticsearch
 
 #
 # ustawienie zmiennych - dostep do systemu
 #
-#   zmienne dot. elasticsearch
+#   zmienne dot. opensearch
 #
-repo_name = "glog-arch"
-es_host = "localhost"
-es_proto = "http"
-es_port = "9200"
-es_snap_create_timeout = 1000
-#es = Elasticsearch()
-es = Elasticsearch(es_proto + "://" + es_host + ":" + es_port)
+
+f = open("/etc/glog-appliance/var/variables.json", "rb")
+
+variables = json.load(f)
+
+repo_name = variables["repo_name"]
+es_host = variables["es_host"]
+es_proto = variables["es_proto"]
+es_port = variables["es_port"]
+es_snap_create_timeout = variables["es_snap_create_timeout"]
 
 #
 #   zmienne dot. graylog
 #       token nalezy wygenerowac w GUI Graylog
 #
-glog_host = "172.16.0.200"
-glog_proto = "https"
-glog_port = "9000"
-glog_token = "1t634853h5c7ob55rlmk8to3ffdpq2dvq03gunb1cuvba2kabiae"
+glog_host = variables["glog_host"]
+glog_proto = variables["glog_proto"]
+glog_port = variables["glog_port"]
+glog_token = variables["glog_token"]
 
 #
 #   zmienne ogolne
 #
-log_filename = "/var/log/glog-arch.log"
+log_filename = variables["log_filename"]
+#"/var/log/glog-arch.log"
 
 #wylaczenie komunikatow o bledach SSL (samopodpisane certyfikaty itp.)
 urllib3.disable_warnings()
+
+#
+#   inicjalizacja polaczenia z ES/OS
+#
+es = OpenSearch(es_proto + "://" + es_host + ":" + es_port)
+# lub --> es = Elasticsearch(es_proto + "://" + es_host + ":" + es_port)
 
 #
 # ustawienie logowania do pliku
@@ -90,10 +101,10 @@ logging.basicConfig(filename=log_filename,level=logging.DEBUG,filemode='a',forma
 glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/system/indices/index_sets"
 
 try:
-	myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
+        myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
 except:
-	print('[E] Unable to connect to ' + glogurl + '! Ending...')
-	sys.exit(1)
+        print('[E] Unable to connect to ' + glogurl + '! Ending...')
+        sys.exit(1)
 
 lIndexSets = []
 lIndexSetsTitle = {}
@@ -120,8 +131,8 @@ if(myResponse.ok):
             except:
                 print('[E] Unable to connect to ' + glogurl + '! Ending...')
                 sys.exit(1)
-            if(myResponse.ok):  
-                jDeflector = json.loads(myResponse.content)       
+            if(myResponse.ok):
+                jDeflector = json.loads(myResponse.content)
                 lIndexSetsDeflectors[key['id']] = jDeflector['current_target']
 
 #
@@ -132,10 +143,10 @@ if(myResponse.ok):
 glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/system/indices/ranges"
 
 try:
-	myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
+        myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
 except:
-	print('[E] Unable to connect to ' + glogurl + '! Ending...')
-	sys.exit(1)
+        print('[E] Unable to connect to ' + glogurl + '! Ending...')
+        sys.exit(1)
 
 lIndices = []
 lIndicesBeginDate = {}
@@ -174,7 +185,7 @@ if(myResponse.ok):
 url = es_proto + "://" + es_host + ":" + es_port + "/_snapshot/" + repo_name + "/_all"
 
 try:
-	myResponse = requests.get(url, verify=True)
+        myResponse = requests.get(url, verify=True)
 except:
         print('[E] Unable to connect to ' + url + '! Ending...')
         sys.exit(1)
@@ -203,7 +214,7 @@ else:
 glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/system/indices/ranges"
 
 try:
-	myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
+        myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
 except:
         print('[E] Unable to connect to ' + glogurl + '! Ending...')
         sys.exit(1)
@@ -237,6 +248,7 @@ if(myResponse.ok):
                         try:
                                 sBodyDebug="{\"indices\":\"" + esIndex + "\", \"include_global_state\": false}"
                                 es.snapshot.create(repository=repo_name,snapshot=strDate + "-" + esIndex,body=sBodyDebug,request_timeout=es_snap_create_timeout,wait_for_completion=True)
+                                #es.snapshot.create(repository=repo_name,snapshot=strDate + "-" + esIndex,indices=esIndex,include_global_state="False",request_timeout=es_snap_create_timeout,wait_for_completion=True)
                         except Exception as e:
                                 print(sBodyDebug)
                                 print(" -- Ups... Cos poszlo nie tak - blad es podczas tworzenia snapshot '" + strDate + "-" + esIndex + "' w repozytorium '" + repo_name + "'. Komunikat ES:'" + str(e) + "'")
