@@ -48,8 +48,12 @@ from opensearchpy import OpenSearch
 #
 #   zmienne dot. opensearch
 #
+try:
+    f = open("/etc/glog-appliance/var/variables.json", "rb")
+except:
+    print('[E] Unable to open file "/etc/glog-appliance/var/variables.json"! Ending...')
+    sys.exit(1)
 
-f = open("/etc/glog-appliance/var/variables.json", "rb")
 
 variables = json.load(f)
 
