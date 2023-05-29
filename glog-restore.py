@@ -201,7 +201,7 @@ if(myResponse.ok):
         dtBegin=try_parseDate(lSnap[0:13],['%Y%m%d%H%M%S','%Y%m%d'])
         if (dtBegin is None): 
             dtBegin=try_parseDate(lSnap[0:8],['%Y%m%d%H%M%S','%Y%m%d'])
-            dtEnd=try_parseDate(lSnap[15:28],['%Y%m%d%H%M%S','%Y%m%d'])
+        dtEnd=try_parseDate(lSnap[15:28],['%Y%m%d%H%M%S','%Y%m%d'])
         if (dtBegin is None) and (dtEnd is None):
             lIndicesInSnaps_BeginDates[key['snapshot']] = datetime.strptime("1970-01-01","%Y-%m-%d")
             lIndicesInSnaps_EndDates[key['snapshot']] = datetime.strptime("1970-01-01","%Y-%m-%d")
