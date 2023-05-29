@@ -75,6 +75,7 @@ except:
     print('[W] Unable to open file "/etc/glog-appliance/var/variables.json"!')
 
 if f:
+    variables = json.load(f)
     def_glog_host=variables["glog_host"]
     def_glog_port=variables["glog_port"]
     def_glog_proto=variables["glog_proto"]
