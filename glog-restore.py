@@ -190,29 +190,30 @@ lIndicesInSnaps_EndDates = {}
 
 if(myResponse.ok):
 
-        #
-        # zaladowanie informacji o snapshotach indeksow do listy lSnaps
-        #
-        jSnaps = json.loads(myResponse.content)
-        for key in jSnaps['snapshots']:
-                lSnap = key['snapshot']
-                lSnaps += [key['snapshot']]
-                lIndicesInSnaps[key['snapshot']] = [key['indices'][0]]
-                dtBegin=try_parseDate(lSnap[0:13],['%Y%m%d%H%M%S','%Y%m%d'])
-                if (dtBegin is None): dtBegin=try_parseDate(lSnap[0:8],['%Y%m%d%H%M%S','%Y%m%d'])
-                dtEnd=try_parseDate(lSnap[15:28],['%Y%m%d%H%M%S','%Y%m%d'])
-                if (dtBegin is None) and (dtEnd is None):
-                        lIndicesInSnaps_BeginDates[key['snapshot']] = datetime.strptime("1970-01-01","%Y-%m-%d")
-                        lIndicesInSnaps_EndDates[key['snapshot']] = datetime.strptime("1970-01-01","%Y-%m-%d")
-                if (dtBegin is not None) and (dtEnd is None):
-                        lIndicesInSnaps_BeginDates[key['snapshot']] = dtBegin
-                        lIndicesInSnaps_EndDates[key['snapshot']] = dtBegin + timedelta(days=1)
-                if (dtBegin is not None) and (dtEnd is not None):
-                        lIndicesInSnaps_BeginDates[key['snapshot']] = dtBegin
-                        lIndicesInSnaps_EndDates[key['snapshot']] = dtEnd
+    #
+    # zaladowanie informacji o snapshotach indeksow do listy lSnaps
+    #
+    jSnaps = json.loads(myResponse.content)
+    for key in jSnaps['snapshots']:
+        lSnap = key['snapshot']
+        lSnaps += [key['snapshot']]
+        lIndicesInSnaps[key['snapshot']] = [key['indices'][0]]
+        dtBegin=try_parseDate(lSnap[0:13],['%Y%m%d%H%M%S','%Y%m%d'])
+        if (dtBegin is None): 
+            dtBegin=try_parseDate(lSnap[0:8],['%Y%m%d%H%M%S','%Y%m%d'])
+            dtEnd=try_parseDate(lSnap[15:28],['%Y%m%d%H%M%S','%Y%m%d'])
+        if (dtBegin is None) and (dtEnd is None):
+            lIndicesInSnaps_BeginDates[key['snapshot']] = datetime.strptime("1970-01-01","%Y-%m-%d")
+            lIndicesInSnaps_EndDates[key['snapshot']] = datetime.strptime("1970-01-01","%Y-%m-%d")
+        if (dtBegin is not None) and (dtEnd is None):
+            lIndicesInSnaps_BeginDates[key['snapshot']] = dtBegin
+            lIndicesInSnaps_EndDates[key['snapshot']] = dtBegin + timedelta(days=1)
+        if (dtBegin is not None) and (dtEnd is not None):
+            lIndicesInSnaps_BeginDates[key['snapshot']] = dtBegin
+            lIndicesInSnaps_EndDates[key['snapshot']] = dtEnd
 
 else:
-        myResponse.raise_for_status()
+    myResponse.raise_for_status()
 
 
 i=0
@@ -222,45 +223,46 @@ lIndicesToOverwrite = []
 lSnapsToRecover = []
 
 for key in lSnaps:
-        if (date_start.date() <= lIndicesInSnaps_BeginDates[key].date() <= date_end.date()) \
-                and (date_start.date() <= lIndicesInSnaps_EndDates[key].date() <= date_end.date()):
-                lIndicesToRecover += lIndicesInSnaps[key]
-                lSnapsToRecover += [key]
-                if lIndicesInSnaps[key][0] in lIndexNames:
-                        lIndicesToOverwrite += lIndicesInSnaps[key]
-                        j += 1
-                i += 1
+    if (date_start.date() <= lIndicesInSnaps_BeginDates[key].date() <= date_end.date()) \
+        and (date_start.date() <= lIndicesInSnaps_EndDates[key].date() <= date_end.date()):
+            lIndicesToRecover += lIndicesInSnaps[key]
+            lSnapsToRecover += [key]
+            if lIndicesInSnaps[key][0] in lIndexNames:
+                lIndicesToOverwrite += lIndicesInSnaps[key]
+                j += 1
+            i += 1
 
 print(lSnapsToRecover)
 
 if i > 20:
-        if not query_yes_no("!UWAGA! Chcesz odtworzyc wiecej niz 20 indeksow. To moze byc dlugotrwaly i obciazajacy system proces. Czy na pewno chcesz kontynuowac ?","no"):
-                quit()
+    if not query_yes_no("!UWAGA! Chcesz odtworzyc wiecej niz 20 indeksow. To moze byc dlugotrwaly i obciazajacy system proces. Czy na pewno chcesz kontynuowac ?","no"):
+        quit()
 
 if i == 0:
-        print("W archiwum '" + es_repo + "' nie ma danych spelniajacych kryteria... ")
+    print("W archiwum '" + es_repo + "' nie ma danych spelniajacych kryteria... ")
+
 else:
+    print("")
+    print("Zamierzasz odtworzyc nastepujace indeksy:")
+    print(lIndicesToRecover)
+    print("")
+    print("ILOSC: " + str(i))
+    print("")
+    if j > 0:
         print("")
-        print("Zamierzasz odtworzyc nastepujace indeksy:")
-        print(lIndicesToRecover)
+        print("!UWAGA! Nastepujace indeksy musza zostac usuniete przed operacja:")
+        print(" Usun indeksy i powtorz operacje ")
+        print(lIndicesToOverwrite)
         print("")
-        print("ILOSC: " + str(i))
+        print("ILOSC: " + str(j))
         print("")
-        if j > 0:
-                print("")
-                print("!UWAGA! Nastepujace indeksy musza zostac usuniete przed operacja:")
-                print(" Usun indeksy i powtorz operacje ")
-                print(lIndicesToOverwrite)
-                print("")
-                print("ILOSC: " + str(j))
-                print("")
-                quit()
+        quit()
 
-        if query_yes_no("Czy NA PEWNO kontynuowac ?"):
-                for snap in lSnapsToRecover:
-                        print(" odtwarzam '" + snap + "' z repozytorium '" + es_repo + "' ... ")
-                        try:
-                                es.snapshot.restore(repository=es_repo,snapshot=snap,body="{\"ignore_unavailable\":\"true\",\"include_global_state\":false}",request_timeout=es_snap_restore_timeout,wait_for_completion=True)
+    if query_yes_no("Czy NA PEWNO kontynuowac ?"):
+        for snap in lSnapsToRecover:
+            print(" odtwarzam '" + snap + "' z repozytorium '" + es_repo + "' ... ")
+            try:
+                es.snapshot.restore(repository=es_repo,snapshot=snap,body="{\"ignore_unavailable\":\"true\",\"include_global_state\":false}",request_timeout=es_snap_restore_timeout,wait_for_completion=True)
 
-                        except:
-                                print("[E] Ups... Cos poszlo nie tak - blad elasticsearch podczas odtworzenia indeksu '" + snap + "' z repozytorium '" + es_repo + "'")
+            except:
+                print("[E] Ups... Cos poszlo nie tak - blad elasticsearch podczas odtworzenia indeksu '" + snap + "' z repozytorium '" + es_repo + "'")
