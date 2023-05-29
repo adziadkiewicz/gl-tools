@@ -19,6 +19,7 @@ import logging
 import sys
 import getopt
 import argparse
+import urllib3
 from datetime import datetime
 from datetime import timedelta
 from opensearchpy import OpenSearch
