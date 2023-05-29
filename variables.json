@@ -1,0 +1,13 @@
+{
+"_comment":"/etc/glog-appliance/var/variables.json",
+"repo_name":"glog-arch",
+"es_host":"localhost",
+"es_proto":"http",
+"es_port":"9200",
+"es_snap_create_timeout":1000,
+"glog_host":"10.102.101.231",
+"glog_proto":"https",
+"glog_port":"9000",
+"glog_token":"hk8gsdaahutivm6fvc9h9jd2d6kau20kn6f2e0t0mfhq5og2hqc",
+"log_filename":"/var/log/glog-arch.log"
+}
