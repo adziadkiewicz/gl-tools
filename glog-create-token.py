@@ -90,7 +90,7 @@ parser.add_argument("-p","--glog_port", help="podaj port systemu Graylog (domysl
 parser.add_argument("-P","--glog_proto", help="podaj protokol dodstepu do systemu (domyslnie https)", default=def_glog_proto)
 parser.add_argument("-t","--glog_token", help="podaj token API do systemu Graylog", default=def_glog_token)
 parser.add_argument("-n","--new_token_name", required=True, help="nazwa tokenu do wygenerowania")
-parser.add_argument("-n","--user_name", required=True, help="nazwa uzytkownika systemu Graylog")
+parser.add_argument("-u","--user_name", required=True, help="nazwa uzytkownika systemu Graylog")
 args = parser.parse_args()
 
 if args.glog_host == "":
@@ -139,11 +139,41 @@ user_id = ""
 if(myResponse.ok):
 
     #
-    # zaladowanie informacji o uzywanych indeksach przez Graylog
+    # zaladowanie informacji o uzytkownikach Graylog
     #
 
     jResponse = json.loads(myResponse.content)
-    user_id = key['id']
+    user_id = jResponse['id']
+
+else:
+    myResponse.raise_for_status()
+
+#
+# pobranie informacji dot. id tokenu uzytkownika Grayloog
+#  
+#  odpowiedz myResponse inna niz 200 (ok) oznacza blad
+#
+glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/users/" + user_id + "/tokens"
+
+try:
+	myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
+except:
+    print('[E] Unable to connect to ' + glogurl + '! Ending...')
+    sys.exit(1)
+
+user_id = ""
+
+if(myResponse.ok):
+
+    #
+    # zaladowanie informacji o tokenach uzytkownika Graylog
+    #
+
+    jResponse = json.loads(myResponse.content)
+    for key in jResponse['tokens']:
+        if key['name'] == new_token_name
+            print key['name']
+            print key['id']
 
 else:
     myResponse.raise_for_status()
