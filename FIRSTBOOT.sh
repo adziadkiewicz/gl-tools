@@ -8,85 +8,108 @@ sleep 2
 plymouth quit
 if [ -f "/root/FIRSTBOOT" ]
 then
-    echo "==================================================="
-    echo " KROK (1) HASLO ADMINISTRATORA APPLIANCE "
-    echo "==================================================="
+    echo "======================================================="
+    echo " KROK (1) HASLO ADMINISTRATORA LINUX - root "
+    echo "======================================================="
     echo ""
-    #echo -n "Podaj haslo uzytkownika root"
-    #echo ""
-    #echo -n "Wywoluje komende 'passwd root' ... "
-    #echo ""
-    #echo -n "UWAGA: Znaki nie sa widoczne!"
-    #echo ""
-    #passwd root
-    unset password
-    prompt="Podaj haslo uzytkownika root:"
-    while IFS= read -p "$prompt" -r -s -n 1 char
-    do
-        if [[ $char == $'\0' ]]
-        then
-            break
-        fi
-        prompt='*'
-        password+="$char"
-    done
+    echo -n "Podaj haslo uzytkownika root"
+    echo ""
+    echo -n "Wywoluje komende 'passwd root' ... "
+    echo ""
+    echo -n "UWAGA: Znaki nie sa widoczne!"
+    echo ""
+    passwd root
     echo ""
     echo ""
+	
+    echo "======================================================="
+    echo " KROK (2) HASLO ADMINISTRATORA LINUX - gl-app (sudoer)"
+    echo "======================================================="
+    echo ""
+    echo ""
+    echo -n "Podaj haslo uzytkownika gl-app"
+    echo ""
+    echo -n "Wywoluje komende 'passwd gl-app' ... "
+    echo ""
+    echo -n "UWAGA: Znaki nie sa widoczne!"
+    echo ""
+    passwd gl-app
+    echo ""
+    echo ""
+   
     echo "==================================================="
-    echo " KROK (2) - NAZWA SERWERA "
+    echo " KROK (3) - NAZWA SERWERA I DOMENY"
     echo "==================================================="
     echo ""
+    validate="^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-\_]*[a-zA-Z0-9])$"
     echo -n "Wpisz nazwe serwera             : "
-    read -n50 -e NAME
-        echo -n "Wpisz nazwe domeny serwera      : "
-    read -n50 -e DOMAIN
+    read -n60 -e NAME
+
+    while [[ $((echo "$NAME" | grep -Eq  $validate) && echo "matched" || echo "notmatch") == "notmatch"  ]]
+    do
+        echo "To nie jest poprawna nazwa\!"
+        echo -n "Wprowadz ponownie nazwe serwera :"
+        read -n60 -e NAME
+    done
+
+    echo -n "Wpisz nazwe domeny serwera             : "
+    read -n60 -e DOMAIN
+
+    while [[ $((echo "$DOMAIN" | grep -Eq  $validate) && echo "matched" || echo "notmatch") == "notmatch"  ]]
+    do
+        echo "To nie jest poprawna nazwa\!"
+        echo -n "Wprowadz ponownie nazwe serwera :"
+        read -n60 -e DOMAIN
+    done
+
     echo ""
     echo ""
-        FQDN="${NAME}.${DOMAIN}"
+    FQDN="${NAME}.${DOMAIN}"
+	
     echo "==================================================="
-    echo " KROK (3) - USTAWIENIA SIECIOWE"
+    echo " KROK (4) - USTAWIENIA SIECIOWE"
     echo "==================================================="
     echo ""
     echo -n "Wprowadz adres IP : "
     read -n50 -e IP
-        while [[ $(ipcalc -cs $IP && echo "vail_ip" || echo "invalid_ip") == "invalid_ip" ]]
-        do
-                echo "To nie jest poprawny adres IP\!"
-                echo "Wprowadz ponownie adres IP :"
-                read -n50 -e IP
-        done
+    while [[ $(/bin/ipcalc -cs $IP && echo "vail_ip" || echo "invalid_ip") == "invalid_ip" ]]
+    do
+        echo "To nie jest poprawny adres IP\!"
+        echo "Wprowadz ponownie adres IP :"
+        read -n50 -e IP
+    done
 
     echo -n "Wprowadz maske podsieci : "
     read -n50 -e NETMASK
-        while [[ $(ipcalc -cs $NETMASK && echo "vail_ip" || echo "invalid_ip") = "invalid_ip" ]]
-        do
-                echo "To nie jest poprawny adres maski\!"
-                echo -n "Wprowadz ponownie maske podsieci :"
-                read -n50 -e NETMASK
-        done
+    while [[ $(/bin/ipcalc -cs $NETMASK && echo "vail_ip" || echo "invalid_ip") == "invalid_ip" ]]
+    do
+        echo "To nie jest poprawny adres maski\!"
+        echo -n "Wprowadz ponownie maske podsieci :"
+        read -n50 -e NETMASK
+    done
 
-        echo -n "Wprowadz adres IP bramy : "
+    echo -n "Wprowadz adres IP bramy : "
     read -n50 -e GATEWAY
-        while [[ $(ipcalc -cs $GATEWAY && echo "vail_ip" || echo "invalid_ip") = "invalid_ip" ]]
-        do
-                echo "To nie jest poprawny adres IP\!"
-                echo -n "Wprowadz ponownie adres IP bramy:"
-                read -n50 -e GATEWAY
-        done
+    while [[ $(/bin/ipcalc -cs $GATEWAY && echo "vail_ip" || echo "invalid_ip") == "invalid_ip" ]]
+    do
+        echo "To nie jest poprawny adres IP\!"
+        echo -n "Wprowadz ponownie adres IP bramy:"
+        read -n50 -e GATEWAY
+    done
 
     echo -n "Wprowadz adres IP serwera DNS : "
     read -n50 -e DNS
-        while [[ $(ipcalc -cs $DNS && echo "vail_ip" || echo "invalid_ip") = "invalid_ip" ]]
-        do
-                echo "To nie jest poprawny adres IP\!"
-                echo -n "Wprowadz ponownie adres IP serwera DNS :"
-                read -n50 -e DNS
-        done
+    while [[ $(/bin/ipcalc -cs $DNS && echo "vail_ip" || echo "invalid_ip") == "invalid_ip" ]]
+    do
+        echo "To nie jest poprawny adres IP\!"
+        echo -n "Wprowadz ponownie adres IP serwera DNS :"
+        read -n50 -e DNS
+    done
 
     echo ""
     echo ""
     echo "==================================================="
-    echo " KROK (4) - USTAWIENIA APLIKACJI"
+    echo " KROK (5) - USTAWIENIA APLIKACJI"
     echo "==================================================="
     echo ""
     echo -n "Podaj haslo dla uzytkownika admin (Graylog GUI)"
@@ -105,45 +128,24 @@ then
     then
         # change hostname
         echo "$NAME" > /etc/hostname
-        sed -i '/HOSTNAME/c\' /etc/sysconfig/network
-        echo "HOSTNAME=$NAME" >> /etc/sysconfig/network
-        hostname $NAME
-        # Remove UUID
-        sed -i '/UUID/c\' /etc/sysconfig/network-scripts/ifcfg-eth0
+        /bin/hostname -b $NAME
+ 
+        rm -rf /etc/netplan/00-installer-config.yaml
+		echo "network:" > /etc/netplan/00-glog-network.yaml
+        echo "    ethernets:" >> /etc/netplan/00-glog-network.yaml
+        echo "        eth0:" >> /etc/netplan/00-glog-network.yaml
+        echo "            dhcp4: false" >> /etc/netplan/00-glog-network.yaml
+        echo "            addresses: [$IP/$NETMASK]" >> /etc/netplan/00-glog-network.yaml
+        echo "            gateway4: $GATEWAY" >> /etc/netplan/00-glog-network.yaml
+        echo "            nameservers:" >> /etc/netplan/00-glog-network.yaml
+        echo "                addresses: [$DNS]" >> /etc/netplan/00-glog-network.yaml
+        echo "    version: 2" >> /etc/netplan/00-glog-network.yaml
 
-        #change Bootproto:
-        sed -i '/BOOTPROTO/c\' /etc/sysconfig/network-scripts/ifcfg-eth0
-        echo "BOOTPROTO=static" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-
-        #change IP address:
-        sed -i '/IPADDR/c\' /etc/sysconfig/network-scripts/ifcfg-eth0
-        echo "IPADDR=$IP" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-
-        # change netmask
-        sed -i '/NETMASK/c\' /etc/sysconfig/network-scripts/ifcfg-eth0
-        echo "NETMASK=$NETMASK" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-
-        # change gateway
-        sed -i '/GATEWAY/c\' /etc/sysconfig/network-scripts/ifcfg-eth0
-        echo "GATEWAY=$GATEWAY" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-
-        # change dns
-        sed -i '/DNS/c\' /etc/sysconfig/network-scripts/ifcfg-eth0
-        echo "DNS1=$DNS" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-        sed -i '/nameserver/c\' /etc/resolv.conf
-        sed -i '/search/c\' /etc/resolv.conf
-        echo "nameserver $DNS" >> /etc/resolv.conf
-        echo "search $DOMAIN" >> /etc/resolv.conf
-
-        # change MAC
-        MAC=`/sbin/ifconfig | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'`
-        sed -i '/HWADDR/c\' /etc/sysconfig/network-scripts/ifcfg-eth0
-        echo "HWADDR=$MAC" >> /etc/sysconfig/network-scripts/ifcfg-eth0
         # make the interface up and restart the service
         echo ""
         echo ""
         echo "Restartuje Network Service . . ."
-        service network restart &> /dev/null
+        service /bin/systemctl status systemd-networkd.service &> /dev/null
         echo ""
         echo ""
         echo "Prosze zweryfikowac wprowadzone zmiany:"
@@ -163,19 +165,13 @@ then
         sed -i '/http_bind_address/c\' /etc/graylog/server/server.conf
         echo "http_bind_address = $IP:9000" >> /etc/graylog/server/server.conf
 
-	# Graylog
-	PASSWORD=$(echo -n $ADMINPASS | sha256sum | awk '{print $1}')
+	    # Graylog
+	    PASSWORD=$(echo -n $ADMINPASS | sha256sum | awk '{print $1}')
         sed -i '/root_password_sha2/c\' /etc/graylog/server/server.conf
         echo "root_password_sha2 = $PASSWORD" >> /etc/graylog/server/server.conf
 
-	# Zabbix
-	mysql zabbix -e "update users set passwd=md5('${ADMINPASS}') where alias='admin';"
-
-        echo "   - tworze certyfikat Graylog SSL . . ."
-        echo ""
-        echo ""
-        # self cert
-	CNFFILE='/etc/ssl/app-ssl.cnf'
+	    # self cert
+	    CNFFILE='/etc/ssl/app-ssl.cnf'
         echo "[req]" > "${CNFFILE}"
         echo "req_extensions = v3_req" >> "${CNFFILE}" 
         echo "distinguished_name = req_distinguished_name" >> "${CNFFILE}"
@@ -198,14 +194,10 @@ then
         echo "DNS.1=$FQDN" >> "${CNFFILE}"
         echo "IP.1=$IP" >> "${CNFFILE}"
 
-	CERTNAME='app-ssl'
+	    CERTNAME='app-ssl'
         /usr/bin/openssl req -x509 -days 7300 -newkey rsa:4096 -nodes -keyout /etc/pki/tls/private/${CERTNAME}-key.pem -out /etc/pki/tls/certs/${CERTNAME}-cert.pem -config ${CNFFILE} -extensions v3_req
         /usr/bin/keytool -delete -noprompt -alias glog-ssl-self -keystore /etc/pki/tls/jvm/glog-ssl.jks -storepass changeit
         /usr/bin/keytool -importcert -noprompt -keystore /etc/pki/tls/jvm/glog-ssl.jks -storepass changeit -alias glog-ssl-self -file /etc/pki/tls/certs/${CERTNAME}-cert.pem
-
-
-        #httpd-apache
-        echo "RedirectMatch ^/$ https://$IP:9000/" > /etc/httpd/conf.d/0000-graylog.conf
 
         echo "Sprzatanie . . . "
         echo ""
@@ -214,13 +206,10 @@ then
         mv -f /root/FIRSTBOOT.sh /etc/salutaris/
         systemctl disable appliance-firstboot.service
         systemctl enable graylog-server.service
-        systemctl enable zabbix-server.service
-	systemctl enable zabbix-agent.service
-        systemctl enable grafana-server.service
-        systemctl enable elasticsearch.service
+        systemctl enable opensearch.service
         systemctl enable mongod.service
 
-	rm /etc/ssh/ssh_host_*
+	    rm -rf /etc/ssh/ssh_host_*
 
         # configure banner
         /sbin/ifup-local
@@ -232,7 +221,7 @@ then
         sleep 5
         reboot
     else
-        bash /root/FIRSTBOOT.sh
+        /bin/bash /root/FIRSTBOOT.sh
     fi
 fi
 
