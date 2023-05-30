@@ -170,12 +170,24 @@ if(myResponse.ok):
     #
 
     jResponse = json.loads(myResponse.content)
+    glogurl = ""
     for key in jResponse['tokens']:
-        if key['name'] == new_token_name
-            print key['name']
-            print key['id']
+        if key['name'] == new_token_name:
+            
+            glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/users/" + user_id + "/tokens/" + key['id']
+            
+            try:
+                myResponse = requests.delete(glogurl, verify=False, auth=(glog_token, 'token'))
+            except:
+                print('[E] Unable to connect to ' + glogurl + '! Ending...')
+                sys.exit(1)
+          
+            print(key['name'])
+            print(key['id'])
 
 else:
     myResponse.raise_for_status()
+
+
 
 print(user_id)
