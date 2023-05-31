@@ -5,7 +5,7 @@
 # (c) 2023, AD, Salutaris Sp. z o.o.
 #
 # v1.0
-# 
+#
 
 
 import requests
@@ -17,10 +17,6 @@ import sys
 import getopt
 import argparse
 import urllib3
-from datetime import datetime
-from datetime import timedelta
-from opensearchpy import OpenSearch
-# lub --> from elasticsearch import Elasticsearch
 
 def query_yes_no(question, default="yes"):
 
@@ -91,6 +87,7 @@ parser.add_argument("-P","--glog_proto", help="podaj protokol dodstepu do system
 parser.add_argument("-t","--glog_token", help="podaj token API do systemu Graylog", default=def_glog_token)
 parser.add_argument("-n","--new_token_name", required=True, help="nazwa tokenu do wygenerowania")
 parser.add_argument("-u","--user_name", required=True, help="nazwa uzytkownika systemu Graylog")
+parser.add_argument("-f","--file_name", help="nazwa pliku do zapisu tokenu")
 args = parser.parse_args()
 
 if args.glog_host == "":
@@ -119,17 +116,17 @@ else:
     glog_token = args.glog_token
     new_token_name = args.new_token_name
     user_name = args.user_name
- 
- 
+    file_name = args.file_name
+
 #
 # pobranie informacji dot. id uzytkownika Grayloog
-#  
+#
 #  odpowiedz myResponse inna niz 200 (ok) oznacza blad
 #
 glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/users/" + user_name
 
 try:
-	myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
+        myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
 except:
     print('[E] Unable to connect to ' + glogurl + '! Ending...')
     sys.exit(1)
@@ -150,44 +147,82 @@ else:
 
 #
 # pobranie informacji dot. id tokenu uzytkownika Grayloog
-#  
+#
 #  odpowiedz myResponse inna niz 200 (ok) oznacza blad
 #
 glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/users/" + user_id + "/tokens"
 
 try:
-	myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
+        myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
 except:
     print('[E] Unable to connect to ' + glogurl + '! Ending...')
     sys.exit(1)
-
-user_id = ""
 
 if(myResponse.ok):
 
     #
     # zaladowanie informacji o tokenach uzytkownika Graylog
-    #
+    #  -- usuniecie istniejacych tokenow o podanej nazwie
 
     jResponse = json.loads(myResponse.content)
     glogurl = ""
     for key in jResponse['tokens']:
         if key['name'] == new_token_name:
-            
-            glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/users/" + user_id + "/tokens/" + key['id']
-            
+
+            glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/users/" + user_id + "/tokens/" + key['id'] + "/"
+            #print(glogurl)
+
+            headers = {
+                'content-type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-By': 'cli'
+            }
+
+            print('[I] Odnaleziono token uzytkownika "' + user_name + '", o nazwie "' + new_token_name + '" -- usuwam ... ')
+
             try:
-                myResponse = requests.delete(glogurl, verify=False, auth=(glog_token, 'token'))
+                myResponse = requests.delete(glogurl, verify=False, headers=headers, auth=(glog_token, 'token'))
+                #myResponse = requests.delete(glogurl, verify=False, auth=(glog_token, 'token'))
             except:
                 print('[E] Unable to connect to ' + glogurl + '! Ending...')
                 sys.exit(1)
-          
-            print(key['name'])
-            print(key['id'])
+
+            if myResponse.status_code == 204:
+                print('.... token usuniety (id:' + key['id'] + ')')
+
+    #
+    #  -- dodanie nowego tokenu
+    #
+
+    glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/users/" + user_id + "/tokens/" + new_token_name
+
+    headers = {
+        'content-type': 'application/json',
+        'Accept': 'application/json',
+        'X-Requested-By': 'cli'
+    }
+
+    print('[I] Tworzenie tokenu uzytkownika "' + user_name + '", o nazwie "' + new_token_name + '" ... ')
+
+    try:
+        myResponse = requests.post(glogurl, verify=False, headers=headers, auth=(glog_token, 'token'))
+    except:
+        print('[E] Unable to connect to ' + glogurl + '! Ending...')
+        sys.exit(1)
+
+    if myResponse.status_code == 200:
+        jResponse = json.loads(myResponse.content)
+        print('.... token dodany prawidlowo!')
+        print('ID:' + jResponse['id'])
+        print('Nazwa: ' + jResponse['name'])
+        print('Token: ' + jResponse['token'])
+
+        if file_name != "":
+            with open(file_name, 'w') as file:
+                file.write(jResponse['token'] + "\n")
+
+    #print(myResponse.status_code)
 
 else:
     myResponse.raise_for_status()
 
-
-
-print(user_id)
