@@ -140,7 +140,7 @@ if(myResponse.ok):
     jResponse = json.loads(myResponse.content)
     glogurl = ""
     for key in jResponse:
-        if key['name'] == new_var_name
+        if key['name'] == new_var_name:
             print(key['name'])
             var_id = key['id']
 
