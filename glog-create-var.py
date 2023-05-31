@@ -110,7 +110,7 @@ if args.new_var_descr == "":
 if args.new_var_content == "":
         parser.print_help()
         quit()
-        
+
 else:
     glog_host = args.glog_host
     glog_proto = args.glog_proto
@@ -120,27 +120,54 @@ else:
     new_var_descr = args.new_var_descr
     new_var_content = args.new_var_content
 
+
+glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/sidecar/configuration_variables"
+
+try:
+    myResponse = requests.get(glogurl, verify=False, auth=(glog_token, 'token'))
+except:
+    print('[E] Unable to connect to ' + glogurl + '! Ending...')
+    sys.exit(1)
+
+var_id = ""
+
+if(myResponse.ok):
+
+    #
+    # zaladowanie informacji o uzytkownikach Graylog
+    #
+
+    jResponse = json.loads(myResponse.content)
+    glogurl = ""
+    for key in jResponse:
+        print(key['id'])
+
+else:
+    myResponse.raise_for_status()
+
+
 #
 # tworzenie zmiennej konfiguracji sidecar w Grayloog
 #
 #  odpowiedz myResponse inna niz 200 (ok) oznacza blad
 #
-glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/sidecar/configuration_variables"
+glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/sidecar/configuration_variables"
 
 headers = {
-    'content-type': 'application/json',
-    'Accept': 'application/json',
-    'X-Requested-By': 'cli'
+    'Content-Type': 'application/json',
+    'X-Requested-By': 'cli',
 }
 
-body = {
+data = {
     'name': new_var_name,
-    'description ': new_var_descr,
-    'content ': new_var_content
-} 
+    'description': new_var_descr,
+    'content': new_var_content,
+}
+
+print(data)
 
 try:
-    myResponse = requests.post(glogurl, headers=headers, json=body, verify=False, auth=(glog_token, 'token'))
+    myResponse = requests.post(glogurl, headers=headers, json=data, verify=False, auth=(glog_token, 'token'))
 except:
     print('[E] Unable to connect to ' + glogurl + '! Ending...')
     sys.exit(1)
@@ -156,9 +183,7 @@ if(myResponse.ok):
     print(jResponse['name'])
     print(jResponse['description'])
     print(jResponse['content'])
-   
+
 else:
     myResponse.raise_for_status()
-
-
-
+    #print(myResponse.headers)
