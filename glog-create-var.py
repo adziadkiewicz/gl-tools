@@ -141,14 +141,12 @@ if(myResponse.ok):
     glogurl = ""
     for key in jResponse:
         if key['name'] == new_var_name:
-            print(key['name'])
+            #print(key['name'])
             var_id = key['id']
 
 else:
     myResponse.raise_for_status()
 
-
-print(var_id)
 
 #
 # tworzenie zmiennej konfiguracji sidecar w Grayloog
@@ -156,7 +154,9 @@ print(var_id)
 #  odpowiedz myResponse inna niz 200 (ok) oznacza blad
 #
 
-#print(data)
+#
+# Przypadek 1 -- gdy zmienna nie istnieje -- tworzenie nowej
+#
 if var_id == "":
 
     glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/sidecar/configuration_variables"
@@ -179,21 +179,15 @@ if var_id == "":
         sys.exit(1)
 
     if(myResponse.ok):
-
-    #
-    # zaladowanie informacji o dodanej zmiennej
-    #
-
+        print('[I] Zmienna "' + new_var_name + '" zostala prawidlowo dodana. Wartosc "' + new_var_content + '"')
         jResponse = json.loads(myResponse.content)
-        #print(jResponse['id'])
-        #print(jResponse['name'])
-        #print(jResponse['description'])
-        #print(jResponse['content'])
 
     else:
         myResponse.raise_for_status()
-        #print(myResponse.headers)
 
+#
+# Przypadek 1 -- gdy zmienna istnieje -- update danych
+#
 if var_id != "":
 
     glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/sidecar/configuration_variables/" + var_id
@@ -218,12 +212,8 @@ if var_id != "":
         sys.exit(1)
 
     if(myResponse.ok):
+        print('[I] Zmienna "' + new_var_name + '" zostala zaktualizowana. Nowa wartosc "' + new_var_content + '"')
         jResponse = json.loads(myResponse.content)
-        #print(jResponse['id'])
-        #print(jResponse['name'])
-        #print(jResponse['description'])
-        #print(jResponse['content'])
 
     else:
         myResponse.raise_for_status()
-        #print(myResponse.headers)
