@@ -148,6 +148,8 @@ else:
     myResponse.raise_for_status()
 
 
+print(var_id)
+
 #
 # tworzenie zmiennej konfiguracji sidecar w Grayloog
 #
