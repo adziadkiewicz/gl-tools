@@ -155,21 +155,23 @@ print(var_id)
 #
 #  odpowiedz myResponse inna niz 200 (ok) oznacza blad
 #
-glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/sidecar/configuration_variables"
-
-headers = {
-    'Content-Type': 'application/json',
-    'X-Requested-By': 'cli',
-}
-
-data = {
-    'name': new_var_name,
-    'description': new_var_descr,
-    'content': new_var_content,
-}
 
 #print(data)
-if var_id != "":
+if var_id == "":
+
+    glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/sidecar/configuration_variables"
+
+    headers = {
+        'Content-Type': 'application/json',
+        'X-Requested-By': 'cli',
+    }
+
+    data = {
+        'name': new_var_name,
+        'description': new_var_descr,
+        'content': new_var_content,
+    }
+
     try:
         myResponse = requests.post(glogurl, headers=headers, json=data, verify=False, auth=(glog_token, 'token'))
     except:
@@ -182,6 +184,38 @@ if var_id != "":
     # zaladowanie informacji o dodanej zmiennej
     #
 
+        jResponse = json.loads(myResponse.content)
+        #print(jResponse['id'])
+        #print(jResponse['name'])
+        #print(jResponse['description'])
+        #print(jResponse['content'])
+
+    else:
+        myResponse.raise_for_status()
+        #print(myResponse.headers)
+
+if var_id != "":
+
+    glogurl = glog_proto + "://" + glog_host + ":" + glog_port + "/api/sidecar/configuration_variables/" + var_id
+
+    headers = {
+        'Content-Type': 'application/json',
+        'X-Requested-By': 'cli',
+    }
+
+    data = {
+        'name': new_var_name,
+        'description': new_var_descr,
+        'content': new_var_content,
+    }
+
+    try:
+        myResponse = requests.put(glogurl, headers=headers, json=data, verify=False, auth=(glog_token, 'token'))
+    except:
+        print('[E] Unable to connect to ' + glogurl + '! Ending...')
+        sys.exit(1)
+
+    if(myResponse.ok):
         jResponse = json.loads(myResponse.content)
         #print(jResponse['id'])
         #print(jResponse['name'])
