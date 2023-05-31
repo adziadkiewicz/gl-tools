@@ -203,7 +203,7 @@ then
         echo ""
         echo ""
         rm -f /root/FIRSTBOOT
-        mv -f /root/FIRSTBOOT.sh /etc/salutaris/
+        mv -f /root/FIRSTBOOT.sh /etc/glog-appliance/
         systemctl disable appliance-firstboot.service
         systemctl enable graylog-server.service
         systemctl enable opensearch.service
@@ -211,18 +211,28 @@ then
 
 	    rm -rf /etc/ssh/ssh_host_*
 
+        echo "Uruchamiam uslugi . . ."
+        echo ""
         systemctl start mongod.service
+		sleep 5
+		systemctl status mongod.service
 		sleep 5
 		systemctl start opensearch.service
 		sleep 5
+		systemctl status opensearch.service
+		sleep 5
 		systemctl start graylog-server.service
-		sleep 30
+		sleep 60
+		systemctl status graylog-server.service
+		sleep 5
 		
-		/usr/local/sbin/glog-create-token.py -n sidecar-api-token -u graylog-sidecar -f /etc/glog-appliance/tokens/sidecar-api-token		
+		echo "Tworze token uzytkownika graylog-sidecar . . ."
+		/usr/local/sbin/glog-create-token.py -n sidecar-api-token -u graylog-sidecar -f /etc/glog-appliance/tokens/sidecar-api-token
+		
+		echo "Zabezpieczam plik z tokenem . . ."
         chmod 0400 /etc/glog-appliance/tokens/sidecar-api-token
-
-        cat /etc/glog-appliance/tokens/sidecar-api-token
 		
+		echo "Tworze paczke instalacyjna dla Windows . . ."
 		TOKEN=`cat /etc/glog-appliance/tokens/sidecar-api-token`
         GLOGURIAPI="https://`/usr/local/sbin/get-glog-uri.sh`:9000/api"
 		GLOGURIAPI_="${GLOGURIAPI/\/\//\^\/\^\/}"
@@ -243,9 +253,12 @@ then
 		rm -rf /var/www/glog-download/win/win-1.4.0-1.zip
 		cd /var/www/glog-download/win
 		/usr/bin/zip win-1.4.0-1.zip AUTO-glog-win-agent-BEATS.bat glog-win-agent-install-beats.bat graylog_sidecar_installer_1.4.0-1.exe
+	    
+		echo "Ustawiam zmienne systemu Graylog . . ."
+		/usr/local/sbin/glog-create-var.py -n glog_server_ip -d 'Graylog Server IP' -c "$IP"
+		/usr/local/sbin/glog-create-var.py -n glog_server_fqdn -d 'Graylog Server FQDN' -c "$FQDN"
 		
-		
-        echo "Kopia zapasowa skryptu FIRSTBOOT.sh zostala utworzona w /etc/salutaris"
+        echo "Kopia zapasowa skryptu FIRSTBOOT.sh zostala utworzona w /etc/glog-appliance/"
         echo ""
         echo ""
         echo "Wykonuje restart serwera (5s) ..."
