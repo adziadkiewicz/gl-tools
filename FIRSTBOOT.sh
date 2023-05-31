@@ -211,9 +211,40 @@ then
 
 	    rm -rf /etc/ssh/ssh_host_*
 
-        # configure banner
-        /sbin/ifup-local
+        systemctl start mongod.service
+		sleep 5
+		systemctl start opensearch.service
+		sleep 5
+		systemctl start graylog-server.service
+		sleep 30
+		
+		/usr/local/sbin/glog-create-token.py -n sidecar-api-token -u graylog-sidecar -f /etc/glog-appliance/tokens/sidecar-api-token		
+        chmod 0400 /etc/glog-appliance/tokens/sidecar-api-token
 
+        cat /etc/glog-appliance/tokens/sidecar-api-token
+		
+		TOKEN=`cat /etc/glog-appliance/tokens/sidecar-api-token`
+        GLOGURIAPI="https://`/usr/local/sbin/get-glog-uri.sh`:9000/api"
+		GLOGURIAPI_="${GLOGURIAPI/\/\//\^\/\^\/}"
+
+        echo "@echo off" > /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+        echo "" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+        echo "REM Skrypt instalujący agenta Graylog dla systemów Windows" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+        echo "REM (c) 2017 AD, Salutaris Sp. z o.o." >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+        echo "REM v 4.1" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+        echo "REM" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+        echo "REM Dopasowane do wersji 3.0 skryptu oraz Graylog 3.x" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+        echo "" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+        echo "cd /D \"%~dp0\"" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+        echo "" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+        echo "glog-win-agent-install-beats.bat -token $TOKEN -url $GLOGURIAPI_ -glsver 1.4.0-1" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+		echo "" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+		
+		rm -rf /var/www/glog-download/win/win-1.4.0-1.zip
+		cd /var/www/glog-download/win
+		/usr/bin/zip win-1.4.0-1.zip AUTO-glog-win-agent-BEATS.bat glog-win-agent-install-beats.bat graylog_sidecar_installer_1.4.0-1.exe
+		
+		
         echo "Kopia zapasowa skryptu FIRSTBOOT.sh zostala utworzona w /etc/salutaris"
         echo ""
         echo ""
