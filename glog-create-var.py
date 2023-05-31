@@ -140,7 +140,9 @@ if(myResponse.ok):
     jResponse = json.loads(myResponse.content)
     glogurl = ""
     for key in jResponse:
-        print(key['id'])
+        if key['name'] == new_var_name
+            print(key['name'])
+            var_id = key['id']
 
 else:
     myResponse.raise_for_status()
@@ -164,26 +166,26 @@ data = {
     'content': new_var_content,
 }
 
-print(data)
+#print(data)
+if var_id != "":
+    try:
+        myResponse = requests.post(glogurl, headers=headers, json=data, verify=False, auth=(glog_token, 'token'))
+    except:
+        print('[E] Unable to connect to ' + glogurl + '! Ending...')
+        sys.exit(1)
 
-try:
-    myResponse = requests.post(glogurl, headers=headers, json=data, verify=False, auth=(glog_token, 'token'))
-except:
-    print('[E] Unable to connect to ' + glogurl + '! Ending...')
-    sys.exit(1)
-
-if(myResponse.ok):
+    if(myResponse.ok):
 
     #
     # zaladowanie informacji o dodanej zmiennej
     #
 
-    jResponse = json.loads(myResponse.content)
-    print(jResponse['id'])
-    print(jResponse['name'])
-    print(jResponse['description'])
-    print(jResponse['content'])
+        jResponse = json.loads(myResponse.content)
+        #print(jResponse['id'])
+        #print(jResponse['name'])
+        #print(jResponse['description'])
+        #print(jResponse['content'])
 
-else:
-    myResponse.raise_for_status()
-    #print(myResponse.headers)
+    else:
+        myResponse.raise_for_status()
+        #print(myResponse.headers)
