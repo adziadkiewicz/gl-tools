@@ -205,6 +205,7 @@ if var_id != "":
     }
 
     data = {
+        'id': var_id,
         'name': new_var_name,
         'description': new_var_descr,
         'content': new_var_content,
