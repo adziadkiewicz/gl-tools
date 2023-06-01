@@ -170,6 +170,9 @@ then
         sed -i '/root_password_sha2/c\' /etc/graylog/server/server.conf
         echo "root_password_sha2 = $PASSWORD" >> /etc/graylog/server/server.conf
 
+        sed -i '/transport_email_web_interface_url/c\' /etc/graylog/server/server.conf
+        echo "transport_email_web_interface_url = https://$IP:9000"
+		
 	    # self cert
 	    CNFFILE='/etc/ssl/app-ssl.cnf'
         echo "[req]" > "${CNFFILE}"
