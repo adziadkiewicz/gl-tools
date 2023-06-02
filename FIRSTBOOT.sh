@@ -1,13 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This script will be executed *after* all the other init scripts.
 # You can put your own initialization stuff in here if you don't
 # want to do the full Sys V style init stuff.
-sleep 2
-/usr/bin/chvt 13
-plymouth quit
+
 if [ -f "/root/FIRSTBOOT" ]
 then
+    sleep 2
+    /usr/bin/chvt 13
+    plymouth quit
+
     echo "======================================================="
     echo " KROK (1) HASLO ADMINISTRATORA LINUX - root "
     echo "======================================================="
@@ -129,23 +131,35 @@ then
         # change hostname
         echo "$NAME" > /etc/hostname
         /bin/hostname -b $NAME
- 
+        
+		CIDR=`awk -F. '{
+         split($0, octets)
+         for (i in octets) {
+           mask += 8 - log(2**8 - octets[i])/log(2);
+        }
+        print "/" mask       
+		}' <<< $NETMASK`
+		
+
         rm -rf /etc/netplan/00-installer-config.yaml
 		echo "network:" > /etc/netplan/00-glog-network.yaml
         echo "    ethernets:" >> /etc/netplan/00-glog-network.yaml
         echo "        eth0:" >> /etc/netplan/00-glog-network.yaml
         echo "            dhcp4: false" >> /etc/netplan/00-glog-network.yaml
-        echo "            addresses: [$IP/$NETMASK]" >> /etc/netplan/00-glog-network.yaml
-        echo "            gateway4: $GATEWAY" >> /etc/netplan/00-glog-network.yaml
+        echo "            addresses: [$IP$CIDR]" >> /etc/netplan/00-glog-network.yaml
         echo "            nameservers:" >> /etc/netplan/00-glog-network.yaml
         echo "                addresses: [$DNS]" >> /etc/netplan/00-glog-network.yaml
-        echo "    version: 2" >> /etc/netplan/00-glog-network.yaml
+        echo "            routes:" >> /etc/netplan/00-glog-network.yaml
+		echo "                - to: default" >> /etc/netplan/00-glog-network.yaml
+		echo "                  via: $GATEWAY" >> /etc/netplan/00-glog-network.yaml
+		echo "    version: 2" >> /etc/netplan/00-glog-network.yaml
+		
 
         # make the interface up and restart the service
         echo ""
         echo ""
         echo "Restartuje Network Service . . ."
-        service /bin/systemctl status systemd-networkd.service &> /dev/null
+        /sbin/netplan apply &> /dev/null
         echo ""
         echo ""
         echo "Prosze zweryfikowac wprowadzone zmiany:"
@@ -198,9 +212,12 @@ then
         echo "IP.1=$IP" >> "${CNFFILE}"
 
 	    CERTNAME='app-ssl'
-        /usr/bin/openssl req -x509 -days 7300 -newkey rsa:4096 -nodes -keyout /etc/pki/tls/private/${CERTNAME}-key.pem -out /etc/pki/tls/certs/${CERTNAME}-cert.pem -config ${CNFFILE} -extensions v3_req
-        /usr/bin/keytool -delete -noprompt -alias glog-ssl-self -keystore /etc/pki/tls/jvm/glog-ssl.jks -storepass changeit
-        /usr/bin/keytool -importcert -noprompt -keystore /etc/pki/tls/jvm/glog-ssl.jks -storepass changeit -alias glog-ssl-self -file /etc/pki/tls/certs/${CERTNAME}-cert.pem
+        /usr/bin/openssl req -x509 -days 7300 -newkey rsa:4096 -nodes -keyout /etc/ssl/glog/${CERTNAME}-key.pem -out /etc/ssl/glog/${CERTNAME}-cert.pem -config ${CNFFILE} -extensions v3_req
+        /usr/bin/keytool -delete -noprompt -alias glog-ssl-self -keystore /etc/ssl/certs/java/glog-ssl.jks -storepass changeit
+        /usr/bin/keytool -importcert -noprompt -keystore /etc/ssl/certs/java/glog-ssl.jks -storepass changeit -alias glog-ssl-self -file /etc/ssl/glog/${CERTNAME}-cert.pem
+
+		chmod 0644 /etc/ssl/glog/${CERTNAME}-cert.pem
+		chmod 0640 /etc/ssl/glog/${CERTNAME}-key.pem
 
         echo "Sprzatanie . . . "
         echo ""
@@ -272,3 +289,4 @@ then
     fi
 fi
 
+exit 0
