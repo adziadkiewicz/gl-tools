@@ -7,7 +7,7 @@
 if [ -f "/root/FIRSTBOOT" ]
 then
     sleep 2
-    /usr/bin/chvt 1
+    /usr/bin/chvt 2
     plymouth quit
 
     echo "======================================================="
@@ -231,10 +231,10 @@ then
 
 	    rm -rf /etc/ssh/ssh_host_*
         echo "Nowe certyfikaty SSH . . . "
-		/usr/sabin/dpkg-reconfigure openssh-server
+		/usr/sbin/dpkg-reconfigure openssh-server
 
         echo "Konfiguracja dla skryptow . . ."
-        /usr/local/sbin/glog-create-config.py -gh ${IP} -gp 9000 -gP https -gt hk8gsdaahutivm6fvc9h9jd2d6kau20kn6f2e0t0mfhq5og2hqc -eh localhost -ep 9200 -eP http -er glog-arch -af /var/log/glog-arch.log
+        /usr/local/sbin/glog-create-config.py -gh ${IP} -gp 9000 -gP https -gt `cat /etc/glog-appliance/tokens/admin-api-token` -eh localhost -ep 9200 -eP http -er glog-arch -af /var/log/glog-arch.log
 
         echo "Uruchamiam uslugi . . ."
         echo ""
@@ -247,9 +247,9 @@ then
 		systemctl status opensearch.service --no-pager
 		sleep 5
 		systemctl start graylog-server.service
-		sleep 20
+		sleep 60
 		systemctl status graylog-server.service --no-pager
-		sleep 5
+		sleep 30
 		
 		echo "Tworze token uzytkownika graylog-sidecar . . ."
 		/usr/local/sbin/glog-create-token.py -n sidecar-api-token -u graylog-sidecar -f /etc/glog-appliance/tokens/sidecar-api-token
