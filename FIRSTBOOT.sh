@@ -6,9 +6,9 @@
 
 if [ -f "/root/FIRSTBOOT" ]
 then
-    sleep 2
-    /usr/bin/chvt 2
-    plymouth quit
+    #sleep 2
+    #/usr/bin/chvt 13
+    #plymouth quit
 
     echo "======================================================="
     echo " KROK (1) HASLO ADMINISTRATORA LINUX - root "
@@ -23,7 +23,7 @@ then
     passwd root
     echo ""
     echo ""
-	
+
     echo "======================================================="
     echo " KROK (2) HASLO ADMINISTRATORA LINUX - gl-app (sudoer)"
     echo "======================================================="
@@ -38,7 +38,7 @@ then
     passwd gl-app
     echo ""
     echo ""
-   
+
     echo "==================================================="
     echo " KROK (3) - NAZWA SERWERA I DOMENY"
     echo "==================================================="
@@ -67,7 +67,7 @@ then
     echo ""
     echo ""
     FQDN="${NAME}.${DOMAIN}"
-	
+
     echo "==================================================="
     echo " KROK (4) - USTAWIENIA SIECIOWE"
     echo "==================================================="
@@ -131,18 +131,18 @@ then
         # change hostname
         echo "$NAME" > /etc/hostname
         /bin/hostname -b $NAME
-        
-		CIDR=`awk -F. '{
+
+                CIDR=`awk -F. '{
          split($0, octets)
          for (i in octets) {
            mask += 8 - log(2**8 - octets[i])/log(2);
         }
-        print "/" mask       
-		}' <<< $NETMASK`
-		
+        print "/" mask
+                }' <<< $NETMASK`
+
 
         rm -rf /etc/netplan/00-installer-config.yaml
-		echo "network:" > /etc/netplan/00-glog-network.yaml
+                echo "network:" > /etc/netplan/00-glog-network.yaml
         echo "    ethernets:" >> /etc/netplan/00-glog-network.yaml
         echo "        eth0:" >> /etc/netplan/00-glog-network.yaml
         echo "            dhcp4: false" >> /etc/netplan/00-glog-network.yaml
@@ -150,10 +150,10 @@ then
         echo "            nameservers:" >> /etc/netplan/00-glog-network.yaml
         echo "                addresses: [$DNS]" >> /etc/netplan/00-glog-network.yaml
         echo "            routes:" >> /etc/netplan/00-glog-network.yaml
-		echo "                - to: default" >> /etc/netplan/00-glog-network.yaml
-		echo "                  via: $GATEWAY" >> /etc/netplan/00-glog-network.yaml
-		echo "    version: 2" >> /etc/netplan/00-glog-network.yaml
-		
+                echo "                - to: default" >> /etc/netplan/00-glog-network.yaml
+                echo "                  via: $GATEWAY" >> /etc/netplan/00-glog-network.yaml
+                echo "    version: 2" >> /etc/netplan/00-glog-network.yaml
+
 
         # make the interface up and restart the service
         echo ""
@@ -179,18 +179,18 @@ then
         sed -i '/http_bind_address/c\' /etc/graylog/server/server.conf
         echo "http_bind_address = $IP:9000" >> /etc/graylog/server/server.conf
 
-	    # Graylog
-	    PASSWORD=$(echo -n $ADMINPASS | sha256sum | awk '{print $1}')
+            # Graylog
+            PASSWORD=$(echo -n $ADMINPASS | sha256sum | awk '{print $1}')
         sed -i '/root_password_sha2/c\' /etc/graylog/server/server.conf
         echo "root_password_sha2 = $PASSWORD" >> /etc/graylog/server/server.conf
 
         sed -i '/transport_email_web_interface_url/c\' /etc/graylog/server/server.conf
         echo "transport_email_web_interface_url = https://$IP:9000"
-		
-	    # self cert
-	    CNFFILE='/etc/ssl/app-ssl.cnf'
+
+            # self cert
+            CNFFILE='/etc/ssl/app-ssl.cnf'
         echo "[req]" > "${CNFFILE}"
-        echo "req_extensions = v3_req" >> "${CNFFILE}" 
+        echo "req_extensions = v3_req" >> "${CNFFILE}"
         echo "distinguished_name = req_distinguished_name" >> "${CNFFILE}"
         echo "prompt = no" >> "${CNFFILE}"
 
@@ -211,13 +211,13 @@ then
         echo "DNS.1=$FQDN" >> "${CNFFILE}"
         echo "IP.1=$IP" >> "${CNFFILE}"
 
-	    CERTNAME='app-ssl'
+            CERTNAME='app-ssl'
         /usr/bin/openssl req -x509 -days 7300 -newkey rsa:4096 -nodes -keyout /etc/ssl/glog/${CERTNAME}-key.pem -out /etc/ssl/glog/${CERTNAME}-cert.pem -config ${CNFFILE} -extensions v3_req
         /usr/bin/keytool -delete -noprompt -alias glog-ssl-self -keystore /etc/ssl/certs/java/glog-ssl.jks -storepass changeit
         /usr/bin/keytool -importcert -noprompt -keystore /etc/ssl/certs/java/glog-ssl.jks -storepass changeit -alias glog-ssl-self -file /etc/ssl/glog/${CERTNAME}-cert.pem
 
-		chmod 0644 /etc/ssl/glog/${CERTNAME}-cert.pem
-		chmod 0640 /etc/ssl/glog/${CERTNAME}-key.pem
+                chmod 0644 /etc/ssl/glog/${CERTNAME}-cert.pem
+                chmod 0640 /etc/ssl/glog/${CERTNAME}-key.pem
 
         echo "Sprzatanie . . . "
         echo ""
@@ -229,9 +229,9 @@ then
         systemctl enable opensearch.service
         systemctl enable mongod.service
 
-	    rm -rf /etc/ssh/ssh_host_*
+            rm -rf /etc/ssh/ssh_host_*
         echo "Nowe certyfikaty SSH . . . "
-		/usr/sbin/dpkg-reconfigure openssh-server
+                /usr/sbin/dpkg-reconfigure openssh-server
 
         echo "Konfiguracja dla skryptow . . ."
         /usr/local/sbin/glog-create-config.py -gh ${IP} -gp 9000 -gP https -gt `cat /etc/glog-appliance/tokens/admin-api-token` -eh localhost -ep 9200 -eP http -er glog-arch -af /var/log/glog-arch.log
@@ -239,28 +239,28 @@ then
         echo "Uruchamiam uslugi . . ."
         echo ""
         systemctl start mongod.service
-		sleep 5
-		systemctl status mongod.service --no-pager
-		sleep 5
-		systemctl start opensearch.service
-		sleep 5
-		systemctl status opensearch.service --no-pager
-		sleep 5
-		systemctl start graylog-server.service
-		sleep 60
-		systemctl status graylog-server.service --no-pager
-		sleep 30
-		
-		echo "Tworze token uzytkownika graylog-sidecar . . ."
-		/usr/local/sbin/glog-create-token.py -n sidecar-api-token -u graylog-sidecar -f /etc/glog-appliance/tokens/sidecar-api-token
-		
-		echo "Zabezpieczam plik z tokenem . . ."
+                sleep 5
+                systemctl status mongod.service --no-pager
+                sleep 5
+                systemctl start opensearch.service
+                sleep 5
+                systemctl status opensearch.service --no-pager
+                sleep 5
+                systemctl start graylog-server.service
+                sleep 60
+                systemctl status graylog-server.service --no-pager
+                sleep 30
+
+                echo "Tworze token uzytkownika graylog-sidecar . . ."
+                /usr/local/sbin/glog-create-token.py -n sidecar-api-token -u graylog-sidecar -f /etc/glog-appliance/tokens/sidecar-api-token
+
+                echo "Zabezpieczam plik z tokenem . . ."
         chmod 0400 /etc/glog-appliance/tokens/sidecar-api-token
-		
-		echo "Tworze paczke instalacyjna dla Windows . . ."
-		TOKEN=`cat /etc/glog-appliance/tokens/sidecar-api-token`
-        GLOGURIAPI="https://`/usr/local/sbin/get-glog-uri.sh`:9000/api"
-		GLOGURIAPI_="${GLOGURIAPI/\/\//\^\/\^\/}"
+
+                echo "Tworze paczke instalacyjna dla Windows . . ."
+                TOKEN=`cat /etc/glog-appliance/tokens/sidecar-api-token`
+        GLOGURIAPI="https://`/usr/local/sbin/get-glog-uri.sh`/api"
+        GLOGURIAPI_="${GLOGURIAPI/\/\//\^\/\^\/}"
 
         echo "@echo off" > /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
         echo "" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
@@ -273,16 +273,17 @@ then
         echo "cd /D \"%~dp0\"" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
         echo "" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
         echo "glog-win-agent-install-beats.bat -token $TOKEN -url $GLOGURIAPI_ -glsver 1.4.0-1" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
-		echo "" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
-		
-		rm -rf /var/www/glog-download/win/win-1.4.0-1.zip
-		cd /var/www/glog-download/win
-		/usr/bin/zip win-1.4.0-1.zip AUTO-glog-win-agent-BEATS.bat glog-win-agent-install-beats.bat graylog_sidecar_installer_1.4.0-1.exe
-	    
-		echo "Ustawiam zmienne systemu Graylog . . ."
-		/usr/local/sbin/glog-create-var.py -n glog_server_ip -d 'Graylog Server IP' -c "$IP"
-		/usr/local/sbin/glog-create-var.py -n glog_server_fqdn -d 'Graylog Server FQDN' -c "$FQDN"
-		
+        echo "" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+
+		/usr/bin/unix2dos /var/www/glog-download/win/*.bat
+        rm -rf /var/www/glog-download/win/win-1.4.0-1.zip
+        cd /var/www/glog-download/win
+        /usr/bin/zip win-1.4.0-1.zip AUTO-glog-win-agent-BEATS.bat glog-win-agent-install-beats.bat graylog_sidecar_installer_1.4.0-1.exe
+
+        echo "Ustawiam zmienne systemu Graylog . . ."
+        /usr/local/sbin/glog-create-var.py -n glog_server_ip -d 'Graylog Server IP' -c "$IP"
+        /usr/local/sbin/glog-create-var.py -n glog_server_fqdn -d 'Graylog Server FQDN' -c "$FQDN"
+
         echo "Kopia zapasowa skryptu FIRSTBOOT.sh zostala utworzona w /etc/glog-appliance/"
         echo ""
         echo ""
