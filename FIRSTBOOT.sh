@@ -7,7 +7,7 @@
 if [ -f "/root/FIRSTBOOT" ]
 then
     sleep 2
-    /usr/bin/chvt 13
+    /usr/bin/chvt 1
     plymouth quit
 
     echo "======================================================="
@@ -230,21 +230,24 @@ then
         systemctl enable mongod.service
 
 	    rm -rf /etc/ssh/ssh_host_*
+		/usr/sabin/dpkg-reconfigure openssh-server
 
         echo "Uruchamiam uslugi . . ."
         echo ""
         systemctl start mongod.service
 		sleep 5
-		systemctl status mongod.service
+		systemctl status mongod.service --no-pager
 		sleep 5
 		systemctl start opensearch.service
 		sleep 5
-		systemctl status opensearch.service
+		systemctl status opensearch.service --no-pager
 		sleep 5
 		systemctl start graylog-server.service
-		sleep 60
-		systemctl status graylog-server.service
+		sleep 20
+		systemctl status graylog-server.service --no-pager
 		sleep 5
+		
+		
 		
 		echo "Tworze token uzytkownika graylog-sidecar . . ."
 		/usr/local/sbin/glog-create-token.py -n sidecar-api-token -u graylog-sidecar -f /etc/glog-appliance/tokens/sidecar-api-token
