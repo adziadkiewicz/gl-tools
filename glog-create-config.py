@@ -121,11 +121,11 @@ else:
 
 
 try:
-    f = open("/etc/glog-appliance/var/variables.json", "rw")
+    f = open("/etc/glog-appliance/var/variables.json", "w")
 except:
     print('[E] Unable to open file "/etc/glog-appliance/var/variables.json"!')
     quit()
-    
+
 if f:
     variables = {}
     variables["repo_name"] = es_repo
@@ -138,6 +138,4 @@ if f:
     variables["glog_port"] = glog_port
     variables["glog_token"] = glog_token
     variables["log_filename"] = glog_arch_log
-    json.dump(variables, f)
-
-
+    json.dump(variables,f)

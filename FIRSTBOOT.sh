@@ -232,6 +232,8 @@ then
 	    rm -rf /etc/ssh/ssh_host_*
 		/usr/sabin/dpkg-reconfigure openssh-server
 
+        /usr/local/sbin/glog-create-config.py -gh ${IP} -gp 9000 -gP https -gt hk8gsdaahutivm6fvc9h9jd2d6kau20kn6f2e0t0mfhq5og2hqc -eh localhost -ep 9200 -eP http -er glog-arch -af /var/log/glog-arch.log
+
         echo "Uruchamiam uslugi . . ."
         echo ""
         systemctl start mongod.service
