@@ -230,8 +230,10 @@ then
         systemctl enable mongod.service
 
 	    rm -rf /etc/ssh/ssh_host_*
+        echo "Nowe certyfikaty SSH . . . "
 		/usr/sabin/dpkg-reconfigure openssh-server
 
+        echo "Konfiguracja dla skryptow . . ."
         /usr/local/sbin/glog-create-config.py -gh ${IP} -gp 9000 -gP https -gt hk8gsdaahutivm6fvc9h9jd2d6kau20kn6f2e0t0mfhq5og2hqc -eh localhost -ep 9200 -eP http -er glog-arch -af /var/log/glog-arch.log
 
         echo "Uruchamiam uslugi . . ."
@@ -248,8 +250,6 @@ then
 		sleep 20
 		systemctl status graylog-server.service --no-pager
 		sleep 5
-		
-		
 		
 		echo "Tworze token uzytkownika graylog-sidecar . . ."
 		/usr/local/sbin/glog-create-token.py -n sidecar-api-token -u graylog-sidecar -f /etc/glog-appliance/tokens/sidecar-api-token
