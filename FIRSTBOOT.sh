@@ -4,6 +4,23 @@
 # You can put your own initialization stuff in here if you don't
 # want to do the full Sys V style init stuff.
 
+function valid_ip()
+{
+    local  ip=$1
+    local  stat=1
+
+    if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        OIFS=$IFS
+        IFS='.'
+        ip=($ip)
+        IFS=$OIFS
+        [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 \
+            && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+        stat=$?
+    fi
+    return $stat
+}
+
 if [ -f "/root/FIRSTBOOT" ]
 then
     #sleep 2
@@ -47,22 +64,22 @@ then
     echo -n "Wpisz nazwe serwera             : "
     read -n60 -e NAME
 
-    while [[ $((echo "$NAME" | grep -Eq  $validate) && echo "matched" || echo "notmatch") == "notmatch"  ]]
-    do
-        echo "To nie jest poprawna nazwa\!"
-        echo -n "Wprowadz ponownie nazwe serwera :"
-        read -n60 -e NAME
-    done
+    #while [[ $((echo "$NAME" | grep -Eq  $validate) && echo "matched" || echo "notmatch") == "notmatch"  ]]
+    #do
+    #    echo "To nie jest poprawna nazwa\!"
+    #    echo -n "Wprowadz ponownie nazwe serwera :"
+    #    read -n60 -e NAME
+    #done
 
     echo -n "Wpisz nazwe domeny serwera             : "
     read -n60 -e DOMAIN
 
-    while [[ $((echo "$DOMAIN" | grep -Eq  $validate) && echo "matched" || echo "notmatch") == "notmatch"  ]]
-    do
-        echo "To nie jest poprawna nazwa\!"
-        echo -n "Wprowadz ponownie nazwe serwera :"
-        read -n60 -e DOMAIN
-    done
+    #while [[ $((echo "$DOMAIN" | grep -Eq  $validate) && echo "matched" || echo "notmatch") == "notmatch"  ]]
+    #do
+    #    echo "To nie jest poprawna nazwa\!"
+    #    echo -n "Wprowadz ponownie nazwe serwera :"
+    #    read -n60 -e DOMAIN
+    #done
 
     echo ""
     echo ""
@@ -74,39 +91,63 @@ then
     echo ""
     echo -n "Wprowadz adres IP : "
     read -n50 -e IP
-    while [[ $(/bin/ipcalc -cs $IP && echo "vail_ip" || echo "invalid_ip") == "invalid_ip" ]]
-    do
-        echo "To nie jest poprawny adres IP\!"
-        echo "Wprowadz ponownie adres IP :"
-        read -n50 -e IP
-    done
+    if ! valid_ip $IP
+    then
+     while true
+     do
+      if valid_ip $IP
+      then
+       break
+      fi
+      echo "To nie jest poprawny adres IP\!"
+      echo "Wprowadz ponownie adres IP :"
+      read -n50 -e IP
+     done
 
     echo -n "Wprowadz maske podsieci : "
     read -n50 -e NETMASK
-    while [[ $(/bin/ipcalc -cs $NETMASK && echo "vail_ip" || echo "invalid_ip") == "invalid_ip" ]]
-    do
-        echo "To nie jest poprawny adres maski\!"
-        echo -n "Wprowadz ponownie maske podsieci :"
-        read -n50 -e NETMASK
-    done
+    if ! valid_ip $NETMASK
+    then
+     while true
+     do
+      if valid_ip $NETMASK
+      then
+       break
+      fi
+      echo "To nie jest poprawny adres IP\!"
+      echo "Wprowadz ponownie adres IP :"
+      read -n50 -e IP
+     done
 
     echo -n "Wprowadz adres IP bramy : "
     read -n50 -e GATEWAY
-    while [[ $(/bin/ipcalc -cs $GATEWAY && echo "vail_ip" || echo "invalid_ip") == "invalid_ip" ]]
-    do
-        echo "To nie jest poprawny adres IP\!"
-        echo -n "Wprowadz ponownie adres IP bramy:"
-        read -n50 -e GATEWAY
-    done
+    if ! valid_ip $GATEWAY
+    then
+     while true
+     do
+      if valid_ip $GATEWAY
+      then
+       break
+      fi
+      echo "To nie jest poprawny adres IP\!"
+      echo "Wprowadz ponownie adres IP :"
+      read -n50 -e IP
+     done
 
     echo -n "Wprowadz adres IP serwera DNS : "
     read -n50 -e DNS
-    while [[ $(/bin/ipcalc -cs $DNS && echo "vail_ip" || echo "invalid_ip") == "invalid_ip" ]]
-    do
-        echo "To nie jest poprawny adres IP\!"
-        echo -n "Wprowadz ponownie adres IP serwera DNS :"
-        read -n50 -e DNS
-    done
+    if ! valid_ip $DNS
+    then
+     while true
+     do
+      if valid_ip $DNS
+      then
+       break
+      fi
+      echo "To nie jest poprawny adres IP\!"
+      echo "Wprowadz ponownie adres IP :"
+      read -n50 -e IP
+     done
 
     echo ""
     echo ""
