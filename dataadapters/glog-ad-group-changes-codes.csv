@@ -1,0 +1,7 @@
+"event_code","event_code_str"
+"4728","Dodanie członka do grupy zabezpieczeń typu globalnego (zmiana roli)"
+"4729","Usunięcie członka z grupy zabezpieczeń typu globalnego (zmiana roli)"
+"4732","Dodanie członka do grupy zabezpieczeń typu domain-local (zmiana uprawnień)"
+"4733","Usunięcie członka z grupy zabezpieczeń typu domain-local (zmiana uprawnień)"
+"4756","Dodanie członka do grupy zabezpieczeń typu universal"
+"4757","Usunięcie członka z grupy zabezpieczeń typu universal"

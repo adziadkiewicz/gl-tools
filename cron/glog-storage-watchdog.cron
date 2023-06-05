@@ -1,0 +1,2 @@
+#Log zajetosci przestrzeni dyskowej
+0 */1 * * * root /usr/local/sbin/glog-storage-watchdog.sh >> /var/log/glog-storage-watchdog.log
