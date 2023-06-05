@@ -115,9 +115,9 @@ then
       then
        break
       fi
-      echo "To nie jest poprawny adres IP\!"
-      echo "Wprowadz ponownie adres IP :"
-      read -n50 -e IP
+      echo "To nie jest poprawny adres \!"
+      echo -n "Wprowadz ponownie:"
+      read -n50 -e NETMASK
      done
     fi
 	
@@ -131,9 +131,9 @@ then
       then
        break
       fi
-      echo "To nie jest poprawny adres IP\!"
-      echo "Wprowadz ponownie adres IP :"
-      read -n50 -e IP
+      echo "To nie jest poprawny adres\!"
+      echo -n "Wprowadz ponownie:"
+      read -n50 -e GATEWAY
      done
     fi
 	
@@ -147,9 +147,9 @@ then
       then
        break
       fi
-      echo "To nie jest poprawny adres IP\!"
-      echo "Wprowadz ponownie adres IP :"
-      read -n50 -e IP
+      echo "To nie jest poprawny adres\!"
+      echo "Wprowadz ponownie:"
+      read -n50 -e DNS
      done
     fi
 	
