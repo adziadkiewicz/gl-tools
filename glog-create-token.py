@@ -4,7 +4,7 @@
 # skrypt opracowany w ramach wdrozenia centralnego systemu syslog
 # (c) 2023, AD, Salutaris Sp. z o.o.
 #
-# v1.0
+# v1.0 t
 #
 
 
