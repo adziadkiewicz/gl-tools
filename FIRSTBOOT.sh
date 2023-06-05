@@ -165,6 +165,7 @@ then
     echo ""
     echo "==================================================="
     echo "Czy wprowadzone dane sa poprawne ? (t/n) : "
+	echo "(nacisnij n aby powtorzyc konfiguracje)"
     echo ""
     read -n1 -e answer
     if [ $answer == t ]
@@ -228,8 +229,8 @@ then
         sed -i '/transport_email_web_interface_url/c\' /etc/graylog/server/server.conf
         echo "transport_email_web_interface_url = https://$IP:9000"
 
-            # self cert
-            CNFFILE='/etc/ssl/app-ssl.cnf'
+        # self cert
+        CNFFILE='/etc/ssl/app-ssl.cnf'
         echo "[req]" > "${CNFFILE}"
         echo "req_extensions = v3_req" >> "${CNFFILE}"
         echo "distinguished_name = req_distinguished_name" >> "${CNFFILE}"
@@ -257,8 +258,8 @@ then
         /usr/bin/keytool -delete -noprompt -alias glog-ssl-self -keystore /etc/ssl/certs/java/glog-ssl.jks -storepass changeit
         /usr/bin/keytool -importcert -noprompt -keystore /etc/ssl/certs/java/glog-ssl.jks -storepass changeit -alias glog-ssl-self -file /etc/ssl/glog/${CERTNAME}-cert.pem
 
-                chmod 0644 /etc/ssl/glog/${CERTNAME}-cert.pem
-                chmod 0640 /etc/ssl/glog/${CERTNAME}-key.pem
+        chmod 0644 /etc/ssl/glog/${CERTNAME}-cert.pem
+        chmod 0640 /etc/ssl/glog/${CERTNAME}-key.pem
 
         echo "Sprzatanie . . . "
         echo ""
@@ -270,9 +271,9 @@ then
         systemctl enable opensearch.service
         systemctl enable mongod.service
 
-            rm -rf /etc/ssh/ssh_host_*
+        rm -rf /etc/ssh/ssh_host_*
         echo "Nowe certyfikaty SSH . . . "
-                /usr/sbin/dpkg-reconfigure openssh-server
+        /usr/sbin/dpkg-reconfigure openssh-server
 
         echo "Konfiguracja dla skryptow . . ."
         /usr/local/sbin/glog-create-config.py -gh ${IP} -gp 9000 -gP https -gt `cat /etc/glog-appliance/tokens/admin-api-token` -eh localhost -ep 9200 -eP http -er glog-arch -af /var/log/glog-arch.log
@@ -316,10 +317,37 @@ then
         echo "glog-win-agent-install-beats.bat -token $TOKEN -url $GLOGURIAPI_ -glsver 1.4.0-1" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
         echo "" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
 
+
+        echo "server_url: \"$GLOGURIAPI\"" > /var/www/glog-download/linux/sidecar.yml
+        echo "server_api_token: \"$TOKEN\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "node_id: \"file:/etc/graylog/sidecar/node-id\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "node_name: \"\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "update_interval: 10" >> /var/www/glog-download/linux/sidecar.yml
+        echo "tls_skip_verify: true" >> /var/www/glog-download/linux/sidecar.yml
+        echo "send_status: true" >> /var/www/glog-download/linux/sidecar.yml
+        echo "Default:" >> /var/www/glog-download/linux/sidecar.yml
+        echo "collector_binaries_whitelist:" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/usr/bin/filebeat\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/usr/bin/packetbeat\"" >> /var/www/glog-download/linux/sidecar.yml 
+        echo "  - \"/usr/bin/metricbeat\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/usr/bin/heartbeat\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/usr/bin/auditbeat\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/usr/bin/journalbeat\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/usr/share/filebeat/bin/filebeat\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/usr/share/packetbeat/bin/packetbeat\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/usr/share/metricbeat/bin/metricbeat\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/usr/share/heartbeat/bin/heartbeat\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/usr/share/auditbeat/bin/auditbeat\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/usr/share/journalbeat/bin/journalbeat\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/usr/bin/nxlog\"" >> /var/www/glog-download/linux/sidecar.yml
+        echo "  - \"/opt/nxlog/bin/nxlog\"">> /var/www/glog-download/linux/sidecar.yml
+
 		/usr/bin/unix2dos /var/www/glog-download/win/*.bat
         rm -rf /var/www/glog-download/win/win-1.4.0-1.zip
         cd /var/www/glog-download/win
         /usr/bin/zip win-1.4.0-1.zip AUTO-glog-win-agent-BEATS.bat glog-win-agent-install-beats.bat graylog_sidecar_installer_1.4.0-1.exe
+
+        chown -R www-data:www-data /var/www/glog-download/
 
         echo "Ustawiam zmienne systemu Graylog . . ."
         /usr/local/sbin/glog-create-var.py -n glog_server_ip -d 'Graylog Server IP' -c "$IP"
