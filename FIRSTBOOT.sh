@@ -103,7 +103,8 @@ then
       echo "Wprowadz ponownie adres IP :"
       read -n50 -e IP
      done
-
+    fi
+	
     echo -n "Wprowadz maske podsieci : "
     read -n50 -e NETMASK
     if ! valid_ip $NETMASK
@@ -118,7 +119,8 @@ then
       echo "Wprowadz ponownie adres IP :"
       read -n50 -e IP
      done
-
+    fi
+	
     echo -n "Wprowadz adres IP bramy : "
     read -n50 -e GATEWAY
     if ! valid_ip $GATEWAY
@@ -133,7 +135,8 @@ then
       echo "Wprowadz ponownie adres IP :"
       read -n50 -e IP
      done
-
+    fi
+	
     echo -n "Wprowadz adres IP serwera DNS : "
     read -n50 -e DNS
     if ! valid_ip $DNS
@@ -148,7 +151,8 @@ then
       echo "Wprowadz ponownie adres IP :"
       read -n50 -e IP
      done
-
+    fi
+	
     echo ""
     echo ""
     echo "==================================================="
