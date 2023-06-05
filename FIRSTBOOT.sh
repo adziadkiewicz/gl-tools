@@ -342,6 +342,10 @@ then
         echo "  - \"/usr/bin/nxlog\"" >> /var/www/glog-download/linux/sidecar.yml
         echo "  - \"/opt/nxlog/bin/nxlog\"">> /var/www/glog-download/linux/sidecar.yml
 
+        cp -f /var/www/glog-download/linux/sidecar.yml /etc/graylog/sidecar/sidecar.yml 
+        systemctl enable graylog-sidecar
+		systemctl restart graylog-sidecar
+		
 		/usr/bin/unix2dos /var/www/glog-download/win/*.bat
         rm -rf /var/www/glog-download/win/win-1.4.0-1.zip
         cd /var/www/glog-download/win
