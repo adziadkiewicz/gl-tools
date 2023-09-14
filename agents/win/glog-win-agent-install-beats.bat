@@ -43,8 +43,35 @@ echo.
 GOTO KONIEC
 
 :OK
-SET gls-version=%6
+SETLOCAL
 
+SET gls-version=%6
+SET needed_ver=%gls-version:-=.%
+SET component=c:\Program Files\Graylog\sidecar\graylog-sidecar.exe
+
+IF EXIST "%component%" GOTO check_ver
+GOTO install
+
+:check_ver
+ECHO Katalog instalacyjny GLOG istnieje... sprawdzam wersje...
+ECHO Lokalizacja instalacji: %component%
+
+SET component=%component:\=\\%
+
+FOR /f "usebackq delims=" %%a IN (`"WMIC DATAFILE WHERE name='%component%' get Version /format:Textvaluelist"`) do (
+    FOR /f "delims=" %%# IN ("%%a") DO SET "%%#"
+)
+
+ECHO Wersja GLOG zainstalowana: %version%
+ECHO Wersja GLOG wymagana: %needed_ver%
+
+IF "%version%"=="%needed_ver%" (
+	ECHO Instalacja nie wymagana. Koniec pracy skryptu.
+	GOTO KONIEC
+)
+
+
+:install
 echo Instaluje paczke collector_sidecar_installer ... 
 graylog_sidecar_installer_%gls-version%.exe /S -SERVERURL="%4" -APITOKEN="%2"
 echo #komenda: graylog_sidecar_installer_%gls-version%.exe /S -SERVERURL="%4" -APITOKEN="%2"
@@ -106,4 +133,3 @@ net start "Graylog Sidecar"
 
 :KONIEC
 
-pause
