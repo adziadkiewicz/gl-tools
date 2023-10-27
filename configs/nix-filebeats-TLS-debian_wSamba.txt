@@ -1,0 +1,26 @@
+# Needed for Graylog
+fields_under_root: true
+fields.collector_node_id: ${sidecar.nodeName}
+fields.gl2_source_collector: ${sidecar.nodeId}
+
+filebeat.inputs:
+- input_type: log
+  paths:
+    - /var/log/dpkg.log
+    - /var/log/auth.log
+    - /var/log/syslog
+    - /var/log/samba/samba.log
+    - /var/log/samba/log.wb-BUILTIN
+    - /var/log/samba/log.wb-MOPS
+    - /var/log/samba/log.%m
+    - /var/log/auth.log
+    - /var/log/samba/log.nmbd*
+  type: log
+output.logstash:
+ ssl:
+  enabled: true
+  verification_mode: none
+ hosts: ["${user.glog_server_ip}:${user.glog_nix_std_beats_tls_port}"]
+path:
+  data: /var/lib/graylog-sidecar/collectors/filebeat/data
+  logs: /var/lib/graylog-sidecar/collectors/filebeat/log
