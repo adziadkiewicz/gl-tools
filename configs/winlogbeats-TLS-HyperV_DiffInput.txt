@@ -1,0 +1,38 @@
+# Needed for Graylog
+fields_under_root: true
+fields.collector_node_id: ${sidecar.nodeName}
+fields.gl2_source_collector: ${sidecar.nodeId}
+
+output.logstash:
+   ssl:
+    enabled: true
+    verification_mode: none
+   hosts: ["${user.glog_server_fqdn}:${user.glog_win_hv_std_beats_tls_port}"]
+path:
+  data: C:\Program Files\Graylog\sidecar\cache\winlogbeat\data
+  logs: C:\Program Files\Graylog\sidecar\logs
+tags:
+ - windows
+winlogbeat:
+  event_logs:
+   - name: Application
+   - name: System
+   - name: Security
+   - name: Microsoft-Windows-Hyper-V-Worker-Operational
+   - name: Microsoft-Windows-Hyper-V-Worker-Admin
+   - name: Microsoft-Windows-Hyper-V-VmSwitch-Operational
+   - name: Microsoft-Windows-Hyper-V-VMSP-Admin
+   - name: Microsoft-Windows-Hyper-V-VMMS-Storage
+   - name: Microsoft-Windows-Hyper-V-VMMS-Operational
+   - name: Microsoft-Windows-Hyper-V-VMMS-Networking
+   - name: Microsoft-Windows-Hyper-V-VMMS-Admin
+   - name: Microsoft-Windows-Hyper-V-VID-Admin
+   - name: Microsoft-Windows-Hyper-V-StorageVSP-Admin
+   - name: Microsoft-Windows-Hyper-V-Hypervisor-Operational
+   - name: Microsoft-Windows-Hyper-V-Hypervisor-Admin
+   - name: Microsoft-Windows-Hyper-V-Guest-Drivers/Operational
+   - name: Microsoft-Windows-Hyper-V-Guest-Drivers/Admin
+   - name: Microsoft-Windows-Hyper-V-Config-Operational
+   - name: Microsoft-Windows-Hyper-V-Config-Admin
+   - name: Microsoft-Windows-Hyper-V-Compute-Operational
+   - name: Microsoft-Windows-Hyper-V-Compute-Admin

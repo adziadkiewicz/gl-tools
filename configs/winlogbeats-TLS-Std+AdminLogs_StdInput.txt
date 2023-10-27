@@ -1,0 +1,111 @@
+# Needed for Graylog
+fields_under_root: true
+fields.collector_node_id: ${sidecar.nodeName}
+fields.gl2_source_collector: ${sidecar.nodeId}
+
+output.logstash:
+   ssl:
+    enabled: true
+    verification_mode: none
+   hosts: ["${user.glog_server_fqdn}:${user.glog_win_std_beats_tls_port}"]
+path:
+  data: C:\Program Files\Graylog\sidecar\cache\winlogbeat\data
+  logs: C:\Program Files\Graylog\sidecar\logs
+tags:
+ - windows
+winlogbeat:
+  event_logs:
+   - name: Application
+   - name: System
+   - name: Security
+   - name: HardwareEvents
+   - name: Internet Explorer
+   - name: Key Management Service
+   - name: Microsoft-AppV-Client/Admin
+   - name: Microsoft-AppV-Client/Virtual Applications
+   - name: Microsoft-ServerCore-ShellLauncher/Admin
+   - name: Microsoft-Windows-All-User-Install-Agent/Admin
+   - name: Microsoft-Windows-AppHost/Admin
+   - name: Microsoft-Windows-Application Server-Applications/Admin
+   - name: Microsoft-Windows-AppModel-Runtime/Admin
+   - name: Microsoft-Windows-AppReadiness/Admin
+   - name: Microsoft-Windows-Storage-ATAPort/Admin
+   - name: Microsoft-Windows-BitLocker-DrivePreparationTool/Admin
+   - name: Microsoft-Client-Licensing-Platform/Admin
+   - name: Microsoft-Windows-ClusterAwareUpdating-Management/Admin
+   - name: Microsoft-Windows-DataIntegrityScan/Admin
+   - name: Microsoft-Windows-DataIntegrityScan/CrashRecovery
+   - name: Microsoft-Windows-DSC/Admin
+   - name: Microsoft-Windows-DeviceManagement-Enterprise-Diagnostics-Provider/Admin
+   - name: Microsoft-Windows-DeviceManagement-Enterprise-Diagnostics-Provider/Autopilot
+   - name: Microsoft-Windows-DeviceSetupManager/Admin
+   - name: Microsoft-Windows-Dhcp-Client/Admin
+   - name: Microsoft-Windows-Dhcpv6-Client/Admin
+   - name: Microsoft-Windows-Diagnosis-Scripted/Admin
+   - name: Microsoft-Windows-Storage-Disk/Admin
+   - name: Microsoft-Windows-DxgKrnl-Admin
+   - name: Microsoft-Windows-EDP-Application-Learning/Admin
+   - name: Microsoft-Windows-EDP-Audit-Regular/Admin
+   - name: Microsoft-Windows-EDP-Audit-TCB/Admin
+   - name: Microsoft-Windows-EnrollmentPolicyWebService/Admin
+   - name: Microsoft-Windows-EnrollmentWebService/Admin
+   - name: Microsoft-Windows-FailoverClustering-Manager/Admin
+   - name: Microsoft-Windows-FileServices-ServerManager-EventProvider/Admin
+   - name: Microsoft-Windows-GenericRoaming/Admin
+   - name: Microsoft-Windows-HostGuardianClient-Service/Admin
+   - name: Microsoft-Windows-HostGuardianService-CA/Admin
+   - name: Microsoft-Windows-HostGuardianService-Client/Admin
+   - name: Microsoft-Windows-Hyper-V-Worker-Operational
+   - name: Microsoft-Windows-Hyper-V-Worker-Admin
+   - name: Microsoft-Windows-Hyper-V-VmSwitch-Operational
+   - name: Microsoft-Windows-Hyper-V-VMSP-Admin
+   - name: Microsoft-Windows-Hyper-V-VMMS-Storage
+   - name: Microsoft-Windows-Hyper-V-VMMS-Operational
+   - name: Microsoft-Windows-Hyper-V-VMMS-Networking
+   - name: Microsoft-Windows-Hyper-V-VMMS-Admin
+   - name: Microsoft-Windows-Hyper-V-VID-Admin
+   - name: Microsoft-Windows-Hyper-V-StorageVSP-Admin
+   - name: Microsoft-Windows-Hyper-V-Hypervisor-Operational
+   - name: Microsoft-Windows-Hyper-V-Hypervisor-Admin
+   - name: Microsoft-Windows-Hyper-V-Guest-Drivers/Operational
+   - name: Microsoft-Windows-Hyper-V-Guest-Drivers/Admin
+   - name: Microsoft-Windows-Hyper-V-Config-Operational
+   - name: Microsoft-Windows-Hyper-V-Config-Admin
+   - name: Microsoft-Windows-Hyper-V-Compute-Operational
+   - name: Microsoft-Windows-Hyper-V-Compute-Admin
+   - name: Microsoft-IIS-Configuration/Administrative
+   - name: Microsoft-IIS-Logging/Logs
+   - name: Microsoft-Windows-IPAM/Admin
+   - name: Microsoft-Windows-Kernel-EventTracing/Admin
+   - name: Microsoft-Management-UI/Admin
+   - name: Microsoft-Windows-MUI/Admin
+   - name: Microsoft-Windows-PowerShell/Admin
+   - name: Microsoft-Windows-PrintBRM/Admin
+   - name: Microsoft-Windows-PrintService/Admin
+   - name: Microsoft-Windows-PushNotification-Platform/Admin
+   - name: Microsoft-Rdms-UI/Admin
+   - name: Microsoft-Windows-RemoteApp and Desktop Connections/Admin
+   - name: Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Admin
+   - name: Microsoft-Windows-SecurityMitigationsBroker/Admin
+   - name: Microsoft-Windows-ServerManager-MultiMachine/Admin
+   - name: Microsoft-Windows-SmartCard-TPM-VCard-Module/Admin
+   - name: Microsoft-Windows-SMBDirect/Admin
+   - name: Microsoft-Windows-SMBWitnessClient/Admin
+   - name: Microsoft-Windows-Storage-Tiering/Admin
+   - name: Microsoft-Windows-Storage-ClassPnP/Admin
+   - name: Microsoft-Windows-Storage-Storport/Admin
+   - name: Microsoft-Windows-TerminalServices-ClientUSBDevices/Admin
+   - name: Microsoft-Windows-TerminalServices-LocalSessionManager/Admin
+   - name: Microsoft-Windows-TerminalServices-PnPDevices/Admin
+   - name: Microsoft-Windows-TerminalServices-Printers/Admin
+   - name: Microsoft-Windows-TerminalServices-RemoteConnectionManager/Admin
+   - name: Microsoft-Windows-TerminalServices-ServerUSBDevices/Admin
+   - name: Microsoft-Windows-TerminalServices-SessionBroker-Client/Admin
+   - name: Microsoft-Windows-User Device Registration/Admin
+   - name: Microsoft-Windows-VerifyHardwareSecurity/Admin
+   - name: Microsoft-Windows-Workplace Join/Admin
+   - name: Microsoft-ServerManagementExperience
+   - name: OpenSSH/Admin
+   - name: Veeam Agent
+   - name: Windows PowerShell
+   
