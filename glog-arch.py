@@ -4,6 +4,9 @@
 # skrypt archiwizacyjny dla systemu Graylog (min. v2.x), elasticsearch (min.2.4.x)
 # (c) 2018-2023 AD, Salutaris Sp. z o.o.
 #
+# v 4.1
+# - dodanie pomijania indeksow systemowych graylog-a (gl-*)
+#
 # v 4.0
 # - dodanie obslugi OpenSearch
 # - dodanie obslugi pliku z parametrami
@@ -76,7 +79,6 @@ glog_token = variables["glog_token"]
 #   zmienne ogolne
 #
 log_filename = variables["log_filename"]
-#"/var/log/glog-arch.log"
 
 #wylaczenie komunikatow o bledach SSL (samopodpisane certyfikaty itp.)
 urllib3.disable_warnings()
@@ -173,6 +175,10 @@ if(myResponse.ok):
                         print("Indeks \'" +  key['index_name'] + "\' jest w trybie zapis/odczyt. Pomijam.")
                         logging.info("Indeks \'" +  key['index_name'] + "\' jest w trybie zapis/odczyt. Pomijam.")
                         skip = True
+                    if strPom.startswith('gl-'):
+                        print("Indeks \'" +  key['index_name'] + "\' to indeks systemowy Graylog. Pomijam.")
+                        logging.info("Indeks \'" +  key['index_name'] + "\' to indeks systemowy Graylog. Pomijam.")
+                        skip = True                    
                 if not skip:
                     lIndices += [key['index_name']]
                     lIndicesBeginDate[key['index_name']] = key['begin']
