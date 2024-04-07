@@ -175,6 +175,7 @@ if(myResponse.ok):
                         print("Indeks \'" +  key['index_name'] + "\' jest w trybie zapis/odczyt. Pomijam.")
                         logging.info("Indeks \'" +  key['index_name'] + "\' jest w trybie zapis/odczyt. Pomijam.")
                         skip = True
+                    strPom = key['index_name']
                     if strPom.startswith('gl-'):
                         print("Indeks \'" +  key['index_name'] + "\' to indeks systemowy Graylog. Pomijam.")
                         logging.info("Indeks \'" +  key['index_name'] + "\' to indeks systemowy Graylog. Pomijam.")
