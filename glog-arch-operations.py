@@ -64,7 +64,7 @@ log_filename = "/var/log/glog-arch-rotation.log"
 logging.basicConfig(filename=log_filename,level=logging.DEBUG,filemode='a',format='%(asctime)s %(message)s')
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-o","--operation", help="rodzaj operacji na danych: list|delete", default="list")
+parser.add_argument("-o","--operation", help="rodzaj operacji na danych: list|remove", default="list")
 parser.add_argument("-b","--date_begin", help="data poczatkowa archiwum zakresu oparacji", default="1970-01-01")
 parser.add_argument("-e","--date_end", help="data koncowa archiwum zakresu operacji", default="1970-01-01")
 parser.add_argument("-r","--es_repo", help="repozytorium backupow Elasticsearch (domyslnie \'glog_arch\')", default=es_repo)
