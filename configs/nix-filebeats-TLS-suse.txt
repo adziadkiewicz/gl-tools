@@ -16,7 +16,7 @@ output.logstash
  ssl:
   enabled: true
   verification_mode: none
- hosts: ["${user.glog_server_ip}:${user.glog_nix_beats_tcp_port}"]
+ hosts: ["${user.glog_server_ip}:${user.glog_nix_std_beats_tls_port}"]
 
 path:
  data: /var/lib/graylog-sidecar/collectors/filebeat/data

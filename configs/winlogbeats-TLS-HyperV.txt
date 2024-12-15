@@ -1,4 +1,4 @@
-# Needed for Graylog
+	# Needed for Graylog
 fields_under_root: true
 fields.collector_node_id: ${sidecar.nodeName}
 fields.gl2_source_collector: ${sidecar.nodeId}
@@ -7,7 +7,7 @@ output.logstash:
    ssl:
     enabled: true
     verification_mode: none
-   hosts: ["${user.glog_server_fqdn}:${user.glog_win_hv_std_beats_tls_port}"]
+   hosts: ["${user.glog_server_ip}:${user.glog_win_std_beats_tls_port}"]
 path:
   data: C:\Program Files\Graylog\sidecar\cache\winlogbeat\data
   logs: C:\Program Files\Graylog\sidecar\logs
@@ -16,23 +16,44 @@ tags:
 winlogbeat:
   event_logs:
    - name: Application
+     ignore_older: 48h
    - name: System
+     ignore_older: 48h
    - name: Security
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-Worker-Operational
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-Worker-Admin
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-VmSwitch-Operational
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-VMSP-Admin
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-VMMS-Storage
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-VMMS-Operational
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-VMMS-Networking
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-VMMS-Admin
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-VID-Admin
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-StorageVSP-Admin
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-Hypervisor-Operational
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-Hypervisor-Admin
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-Guest-Drivers/Operational
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-Guest-Drivers/Admin
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-Config-Operational
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-Config-Admin
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-Compute-Operational
+     ignore_older: 48h
    - name: Microsoft-Windows-Hyper-V-Compute-Admin
+     ignore_older: 48h

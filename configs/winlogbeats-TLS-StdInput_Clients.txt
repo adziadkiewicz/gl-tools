@@ -1,0 +1,55 @@
+# Needed for Graylog
+fields_under_root: true
+fields.collector_node_id: ${sidecar.nodeName}
+fields.gl2_source_collector: ${sidecar.nodeId}
+
+output.logstash:
+   ssl:
+    enabled: true
+    verification_mode: none
+   hosts: ["${user.glog_server_ip}:${user.glog_win_std_beats_tls_port}"]
+path:
+  data: C:\Program Files\Graylog\sidecar\cache\winlogbeat\data
+  logs: C:\Program Files\Graylog\sidecar\logs
+tags:
+ - windows
+winlogbeat:
+  event_logs:
+  - name: Security
+    ignore_older: 48h
+    fields: 
+      windows_clients: 1
+    processors:
+      - drop_event.when.not.or:
+         - equals.winlog.event_id: 4624
+         - equals.winlog.event_id: 4625
+         - equals.winlog.event_id: 4730
+         - equals.winlog.event_id: 4734
+         - equals.winlog.event_id: 4758
+         - equals.winlog.event_id: 4722
+         - equals.winlog.event_id: 4723
+         - equals.winlog.event_id: 4725 
+         - equals.winlog.event_id: 4728
+         - equals.winlog.event_id: 4729
+         - equals.winlog.event_id: 4732
+         - equals.winlog.event_id: 4733
+         - equals.winlog.event_id: 4738
+         - equals.winlog.event_id: 4756
+         - equals.winlog.event_id: 4757
+         - equals.winlog.event_id: 4764
+         - equals.winlog.event_id: 4735
+         - equals.winlog.event_id: 4737
+         - equals.winlog.event_id: 4755
+         - equals.winlog.event_id: 4767
+         - equals.winlog.event_id: 4740
+         - equals.winlog.event_id: 4727
+         - equals.winlog.event_id: 4731
+         - equals.winlog.event_id: 4754
+         - equals.winlog.event_id: 4634
+         - equals.winlog.event_id: 4697
+         - equals.winlog.event_id: 4946
+         - equals.winlog.event_id: 4947
+         - equals.winlog.event_id: 4950
+         - equals.winlog.event_id: 4954
+         - equals.winlog.event_id: 4698
+         - equals.winlog.event_id: 5025

@@ -7,7 +7,7 @@ output.logstash:
    ssl:
     enabled: true
     verification_mode: none
-   hosts: ["${user.glog_server_fqdn}:${user.glog_win_hv_std_beats_tls_port}"]
+   hosts: ["${user.glog_server_ip}:${user.glog_win_std_beats_tls_port}"]
 path:
   data: C:\Program Files\Graylog\sidecar\cache\winlogbeat\data
   logs: C:\Program Files\Graylog\sidecar\logs
@@ -18,6 +18,8 @@ winlogbeat:
    - name: Application
    - name: System
    - name: Security
+     fields: 
+        domain_controllers: 1
    - name: HardwareEvents
    - name: Internet Explorer
    - name: Key Management Service
@@ -108,4 +110,3 @@ winlogbeat:
    - name: OpenSSH/Admin
    - name: Veeam Agent
    - name: Windows PowerShell
-   
