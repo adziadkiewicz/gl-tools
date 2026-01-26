@@ -2,7 +2,7 @@
 
 #
 # skrypt opracowany w ramach wdrozenia centralnego systemu syslog
-# (c) 2023, AD, Salutaris Sp. z o.o.
+# (c) 2026, Adam Dziadkiewicz
 #
 # v1.0
 #
