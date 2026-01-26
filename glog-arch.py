@@ -2,7 +2,7 @@
 
 #
 # skrypt archiwizacyjny dla systemu Graylog (min. v2.x), elasticsearch (min.2.4.x)
-# (c) 2018-2023 AD, Salutaris Sp. z o.o.
+# (c) 2018-2026 Adam Dziadkiewicz
 #
 # v 4.1
 # - dodanie pomijania indeksow systemowych graylog-a (gl-*)
