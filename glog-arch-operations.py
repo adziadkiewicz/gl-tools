@@ -2,7 +2,7 @@
 
 #
 # skrypt umozliwiajacy przeglad kopii ES/OS w repozytorium dla systemu Graylog (min. v2.x), elasticsearch (min.2.4.x)
-# (c) 2018-2024 AD, Salutaris Sp. z o.o.
+# (c) 2018-2026 Adam Dziadkiewicz
 #
 
 import requests
