@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./etc/glog-appliance/var/variables.bash
+. /etc/glog-appliance/var/variables.bash
 
 stor_es_warnLevel=75
 stor_es_arch_warnLevel=85
