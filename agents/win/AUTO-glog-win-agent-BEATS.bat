@@ -1,7 +1,7 @@
 @echo off
 
 REM Skrypt instalujący agenta Graylog dla systemów Windows
-REM (c) 2017 AD, Salutaris Sp. z o.o.
+REM (c) 2026 Adam Dziadkiewicz
 REM v 4.1
 REM
 REM Dopasowane do wersji 3.0 skryptu oraz Graylog 3.x
