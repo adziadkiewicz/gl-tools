@@ -311,7 +311,7 @@ then
         echo "@echo off" > /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
         echo "" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
         echo "REM Skrypt instalujący agenta Graylog dla systemów Windows" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
-        echo "REM (c) 2017 AD, Salutaris Sp. z o.o." >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
+        echo "REM (c) 2026 Adam Dziadkiewicz" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
         echo "REM v 4.1" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
         echo "REM" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
         echo "REM Dopasowane do wersji 3.0 skryptu oraz Graylog 3.x" >> /var/www/glog-download/win/AUTO-glog-win-agent-BEATS.bat
