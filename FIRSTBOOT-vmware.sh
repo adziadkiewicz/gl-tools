@@ -242,10 +242,6 @@ then
 
         echo "[req_distinguished_name]" >> "${CNFFILE}"
         echo "C = PL" >> "${CNFFILE}"
-        echo "ST = slaskie" >> "${CNFFILE}"
-        echo "L = Katowice" >> "${CNFFILE}"
-        echo "O = Salutaris Sp. z o.o." >> "${CNFFILE}"
-        echo "OU = IT" >> "${CNFFILE}"
         echo "CN = $FQDN" >> "${CNFFILE}"
 
         echo "[v3_req]" >> "${CNFFILE}"
