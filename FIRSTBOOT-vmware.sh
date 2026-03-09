@@ -239,7 +239,7 @@ then
         echo ""
         echo "Wynik dzialania komendy ifconfig:"
         echo "==================================================="
-        ifconfig ens192
+        ifconfig ens160
         echo "==================================================="
 
         # configure apps
@@ -269,12 +269,12 @@ then
         echo "IP.1=$IP" >> "${CNFFILE}"
 
         CERTNAME='app-ssl'
-        /usr/bin/openssl req -x509 -days 7300 -newkey rsa:2048 -nodes -keyout /etc/ssl/glog/${CERTNAME}-key.pem -out /etc/ssl/glog/${CERTNAME}-cert.pem -config ${CNFFILE} -extensions v3_req
-		cp /etc/ssl/glog/${CERTNAME}-cert.pem /usr/local/share/ca-certificates/${CERTNAME}-cert.crt
+        /usr/bin/openssl req -x509 -days 7300 -newkey rsa:2048 -nodes -keyout /etc/ssl/app/${CERTNAME}-key.pem -out /etc/ssl/app/${CERTNAME}-cert.pem -config ${CNFFILE} -extensions v3_req
+		cp /etc/ssl/app/${CERTNAME}-cert.pem /usr/local/share/ca-certificates/${CERTNAME}-cert.crt
 		sudo update-ca-certificates
 		
-        chmod 0644 /etc/ssl/glog/${CERTNAME}-cert.pem
-        chmod 0640 /etc/ssl/glog/${CERTNAME}-key.pem
+        chmod 0644 /etc/ssl/app/${CERTNAME}-cert.pem
+        chmod 0640 /etc/ssl/app/${CERTNAME}-key.pem
 		
 		# Zabbix
 		if [ $ZABBIX == "yes" ]
@@ -292,8 +292,8 @@ then
 			sed -i "s/^#\?ENV_VARS_DIRECTORY=.*/ENV_VARS_DIRECTORY=\/etc\/mon-appliance\/docker-compose\/zabbix\/env_vars/" /etc/mon-appliance/docker-compose/zabbix/.env
 
 			openssl dhparam -out /mnt/zbx-data/etc/ssl/nginx/dhparam.pem 2048
-			cp /etc/ssl/glog/${CERTNAME}-cert.pem /mnt/zbx-data/etc/ssl/nginx/ssl.crt
-			cp /etc/ssl/glog/${CERTNAME}-key.pem /mnt/zbx-data/etc/ssl/nginx/ssl.key
+			cp /etc/ssl/app/${CERTNAME}-cert.pem /mnt/zbx-data/etc/ssl/nginx/ssl.crt
+			cp /etc/ssl/app/${CERTNAME}-key.pem /mnt/zbx-data/etc/ssl/nginx/ssl.key
 		fi
 
 		if [ $GRAYLOG == "yes" ]
@@ -308,7 +308,7 @@ then
             echo "transport_email_web_interface_url = https://$IP:9000"
 			
 			/usr/bin/keytool -delete -noprompt -alias glog-ssl-self -keystore /etc/ssl/certs/java/glog-ssl.jks -storepass changeit
-            /usr/bin/keytool -importcert -noprompt -keystore /etc/ssl/certs/java/glog-ssl.jks -storepass changeit -alias glog-ssl-self -file /etc/ssl/glog/${CERTNAME}-cert.pem
+            /usr/bin/keytool -importcert -noprompt -keystore /etc/ssl/certs/java/glog-ssl.jks -storepass changeit -alias glog-ssl-self -file /etc/ssl/app/${CERTNAME}-cert.pem
         fi
 
         echo "Sprzatanie . . . "
