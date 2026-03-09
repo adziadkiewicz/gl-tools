@@ -294,6 +294,7 @@ then
 			openssl dhparam -out /mnt/zbx-data/etc/ssl/nginx/dhparam.pem 2048
 			cp /etc/ssl/app/${CERTNAME}-cert.pem /mnt/zbx-data/etc/ssl/nginx/ssl.crt
 			cp /etc/ssl/app/${CERTNAME}-key.pem /mnt/zbx-data/etc/ssl/nginx/ssl.key
+			chmod 0644 /mnt/zbx-data/etc/ssl/nginx/ssl.key
 		fi
 
 		if [ $GRAYLOG == "yes" ]
