@@ -214,7 +214,7 @@ then
         rm -rf /etc/netplan/00-installer-config.yaml
                 echo "network:" > /etc/netplan/00-glog-network.yaml
         echo "    ethernets:" >> /etc/netplan/00-glog-network.yaml
-        echo "        ens192:" >> /etc/netplan/00-glog-network.yaml
+        echo "        ens160:" >> /etc/netplan/00-glog-network.yaml
         echo "            dhcp4: false" >> /etc/netplan/00-glog-network.yaml
         echo "            addresses: [$IP$CIDR]" >> /etc/netplan/00-glog-network.yaml
         echo "            nameservers:" >> /etc/netplan/00-glog-network.yaml
